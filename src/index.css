@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-gold-50: #fdfaf2;
+  --color-gold-100: #f6ebd0;
+  --color-gold-200: #eddba6;
+  --color-gold-300: #e2c66d;
+  --color-gold-400: #d4ae3b;
+  --color-gold-500: #D4AF37;
+  --color-gold-600: #b58d2a;
+  --color-gold-700: #8c6a22;
+  --color-gold-800: #694e1e;
+  --color-gold-900: #543e1c;
+
+  --color-cinema-red: #D71C44;
+  --color-cinema-dark: #FDFBF7;
+}
+
+/* Stunning Bollywood Crimson / Gold / Fuchsia Glassmorphism utility classes for colorful theme */
+.glass-panel {
+  background: rgba(38, 3, 18, 0.82); /* Deep festive burgundy rose wine fill */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.35); /* Elegant gold-leaf overlay border */
+  box-shadow: 0 8px 32px rgba(215, 28, 68, 0.12), 0 0 15px rgba(212, 175, 55, 0.1);
+}
+
+.glass-panel-heavy {
+  background: rgba(24, 1, 11, 0.96); /* Immersive colorful royal cinema night */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 2px solid rgba(212, 175, 55, 0.45); /* Dual active gold border */
+  box-shadow: 0 16px 48px rgba(215, 28, 68, 0.22), 0 0 30px rgba(212, 175, 55, 0.2);
+}
+
+/* Luxury gold-leaf border with a radiant light-reflecting metallic pattern */
+.gold-leaf-border {
+  border: 1px solid transparent;
+  background: linear-gradient(rgba(38, 3, 18, 0.95), rgba(38, 3, 18, 0.95)) padding-box,
+              linear-gradient(135deg, #f6ebd0 0%, #D4AF37 35%, #8c6a22 70%, #d4ae3b 100%) border-box;
+}
+
+/* Interactive Gold Hover Card */
+.gold-hover-panel {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gold-hover-panel:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(215, 28, 68, 0.3), 0 0 20px rgba(212, 175, 55, 0.25);
+  border-color: rgba(212, 175, 55, 0.8);
+}
+
+/* Semi-transparent blur for the luxury responsive rails and header panels */
+.cinematic-blur-nav {
+  background: rgba(38, 3, 18, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+.gold-glow {
+  text-shadow: 0 2px 12px rgba(212, 175, 55, 0.65), 0 0 5px rgba(215, 28, 68, 0.4);
+}
+
+.gold-border-glow {
+  box-shadow: 0 10px 40px rgba(215, 28, 68, 0.25), 0 0 16px rgba(212, 175, 55, 0.3);
+}
+
+/* Background spotlight ambient glow flares in rich festive, colorful tones */
+.ambient-flare-red {
+  position: absolute;
+  background: radial-gradient(circle, rgba(215, 28, 68, 0.38) 0%, rgba(215, 28, 68, 0) 70%);
+  filter: blur(80px);
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-flare-gold {
+  position: absolute;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.35) 0%, rgba(212, 175, 55, 0) 70%);
+  filter: blur(90px);
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-flare-pink {
+  position: absolute;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.32) 0%, rgba(236, 72, 153, 0) 70%);
+  filter: blur(70px);
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Custom Scrollbar for Luxury Look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FEFCF6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b58d2a;
+}
+
+/* Cinema marquee scanning lights animation */
+@keyframes scanning {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.light-sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(218, 191, 96, 0.15) 50%, rgba(255,255,255,0) 100%);
+  animation: scanning 4s infinite linear;
+}
