@@ -21,7 +21,8 @@ import {
   ChevronRight,
   TrendingUp,
   Award,
-  RefreshCw
+  RefreshCw,
+  Music
 } from "lucide-react";
 
 // Submodule imports
@@ -31,6 +32,11 @@ import BoxOfficeDashboard from "./components/BoxOfficeDashboard";
 import SuccessPredictor from "./components/SuccessPredictor";
 import BollyGPTChat from "./components/BollyGPTChat";
 import QuizArena from "./components/QuizArena";
+import SongsJukebox from "./components/SongsJukebox";
+import BollyverseAuth from "./components/BollyverseAuth";
+import BollyverseArcade from "./components/BollyverseArcade";
+import BollyverseHero from "./components/BollyverseHero";
+
 
 const TRANSLATIONS = {
   en: {
@@ -55,7 +61,8 @@ const TRANSLATIONS = {
     watchlist: "My Watchlist",
     recentActivity: "Recent Reviews",
     trending: "Trending Now",
-    favoritesLabel: "Personal Favorites Tracker"
+    favoritesLabel: "Personal Favorites Tracker",
+    soundtracks: "Hit Soundtracks"
   },
   hi: {
     title: "अनन्या का फैन इंजन",
@@ -79,15 +86,36 @@ const TRANSLATIONS = {
     watchlist: "देखने की सूची",
     recentActivity: "हाल की समीक्षाएं",
     trending: "अभी ट्रेंडिंग में है",
-    favoritesLabel: "व्यक्तिगत पसंद्र ट्रैकर"
+    favoritesLabel: "व्यक्तिगत पसंद्र ट्रैकर",
+    soundtracks: "हिट साउंडट्रैक"
   }
 };
 
 export default function App() {
   const [lang, setLang] = useState<"en" | "hi">("en");
   const [activeTab, setActiveTab] = useState<string>("home");
+  const [selectedSongToPlayId, setSelectedSongToPlayId] = useState<number | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [selectedTimelineCategory, setSelectedTimelineCategory] = useState<string>("All");
+
+  // Premium Authentication and Themeing States
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    return localStorage.getItem("bollyverse_loggedin") === "true";
+  });
+  const [userProfile, setUserProfile] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem("bollyverse_userprofile");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    return (localStorage.getItem("bollyverse_theme") as "dark" | "light") || "dark";
+  });
+  const [festival, setFestival] = useState<string>(() => {
+    return localStorage.getItem("bollyverse_festival") || "cinema";
+  });
   
   // Profile stats state
   const [profile, setProfile] = useState({
@@ -97,6 +125,37 @@ export default function App() {
     badges: ["Movie Buff"],
     reviewCount: 0
   });
+
+  const handleLogin = (profileData: any) => {
+    setIsLoggedIn(true);
+    setUserProfile(profileData);
+    localStorage.setItem("bollyverse_loggedin", "true");
+    localStorage.setItem("bollyverse_userprofile", JSON.stringify(profileData));
+    if (profileData.preferredLanguage) {
+      setLang(profileData.preferredLanguage);
+    }
+    // Boost XP on profile creation
+    handleRegisterXp(35);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserProfile(null);
+    localStorage.removeItem("bollyverse_loggedin");
+    localStorage.removeItem("bollyverse_userprofile");
+  };
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem("bollyverse_theme", nextTheme);
+  };
+
+  const handleSelectFestival = (val: string) => {
+    setFestival(val);
+    localStorage.setItem("bollyverse_festival", val);
+    handleRegisterXp(5); // Reward tiny XP for exploring festival theme triggers
+  };
 
   // Mood discovery state
   const [activeMood, setActiveMood] = useState<string>("");
@@ -184,6 +243,26 @@ export default function App() {
     }
   };
 
+  const handleSelectMovieTitle = async (movieTitle: string) => {
+    try {
+      const resp = await fetch("/api/movies");
+      const movies = await resp.json();
+      const matched = movies.find((m: any) => 
+        m.title.toLowerCase().includes(movieTitle.toLowerCase()) || 
+        movieTitle.toLowerCase().includes(m.title.toLowerCase())
+      );
+      if (matched) {
+        setActiveMovieId(matched.id);
+        setActiveTab("explorer");
+      } else {
+        setActiveTab("explorer");
+      }
+    } catch (e) {
+      console.error("Failed to find movie ID for title", e);
+      setActiveTab("explorer");
+    }
+  };
+
   // Watchlist Actions
   const handleToggleWatchlist = async (movieId: string) => {
     try {
@@ -260,156 +339,245 @@ export default function App() {
     ? timeline
     : timeline.filter(evt => evt.category === selectedTimelineCategory);
 
+  if (!isLoggedIn) {
+    return <BollyverseAuth onLogin={handleLogin} theme={theme} />;
+  }
+
+  // Calculate festival color classes
+  let flareClass1 = "ambient-flare-red top-[-150px] right-[10%] w-[600px] h-[600px] opacity-80 animate-pulse duration-5000";
+  let flareClass2 = "ambient-flare-gold bottom-[15%] left-[5%] w-[550px] h-[550px] opacity-70 animate-pulse duration-3000";
+  let flareClass3 = "ambient-flare-red bottom-[-50px] right-[20%] w-[400px] h-[400px] opacity-60";
+
+  if (festival === "diwali") {
+    flareClass1 = "ambient-flare-gold top-[-150px] right-[10%] w-[600px] h-[600px] opacity-90 animate-pulse duration-5000";
+    flareClass2 = "ambient-flare-red bottom-[15%] left-[5%] w-[550px] h-[550px] opacity-80";
+    flareClass3 = "bg-orange-500/25 top-[40%] right-[30%] w-[500px] h-[500px] filter blur-[130px] absolute pointer-events-none rounded-full animate-bounce duration-8000";
+  } else if (festival === "holi") {
+    flareClass1 = "ambient-flare-pink top-[-150px] right-[10%] w-[600px] h-[600px] opacity-90 animate-pulse";
+    flareClass2 = "bg-purple-600/35 bottom-[15%] left-[5%] w-[550px] h-[550px] filter blur-[90px] absolute pointer-events-none rounded-full";
+    flareClass3 = "bg-cyan-500/25 bottom-[-50px] right-[20%] w-[400px] h-[400px] filter blur-[120px] absolute pointer-events-none rounded-full";
+  } else if (festival === "eid") {
+    flareClass1 = "bg-emerald-600/30 top-[-150px] right-[10%] w-[600px] h-[600px] filter blur-[110px] absolute pointer-events-none rounded-full animate-pulse";
+    flareClass2 = "ambient-flare-gold bottom-[15%] left-[5%] w-[550px] h-[550px] opacity-85";
+    flareClass3 = "bg-teal-600/20 bottom-[-50px] right-[20%] w-[400px] h-[400px] filter blur-[100px] absolute pointer-events-none rounded-full";
+  } else if (festival === "valentine") {
+    flareClass1 = "ambient-flare-pink top-[-150px] right-[10%] w-[600px] h-[600px] opacity-95 animate-pulse duration-7000";
+    flareClass2 = "bg-rose-500/25 bottom-[15%] left-[5%] w-[550px] h-[550px] filter blur-[120px] absolute pointer-events-none rounded-full";
+    flareClass3 = "ambient-flare-red bottom-[-50px] right-[20%] w-[400px] h-[400px] opacity-80";
+  } else if (festival === "patriotic") {
+    flareClass1 = "bg-orange-500/25 top-[-150px] right-[10%] w-[600px] h-[600px] filter blur-[120px] absolute pointer-events-none rounded-full";
+    flareClass2 = "bg-blue-600/20 bottom-[15%] left-[5%] w-[550px] h-[550px] filter blur-[110px] absolute pointer-events-none rounded-full animate-spin-slow";
+    flareClass3 = "bg-emerald-500/25 bottom-[-50px] right-[20%] w-[400px] h-[400px] filter blur-[120px] absolute pointer-events-none rounded-full";
+  }
+
   return (
-    <div className="absolute inset-0 bg-gradient-to-tr from-[#1E010B] via-[#450123] to-[#0A001F] font-sans text-amber-50 overflow-y-auto select-none relative" id="master-app-root">
-      {/* Sophisticated Golden, Fuchsia & Ruby Decorative Background Flares */}
-      <div className="ambient-flare-red top-[-150px] right-[10%] w-[500px] h-[500px] opacity-90" />
-      <div className="ambient-flare-gold bottom-[15%] left-[5%] w-[450px] h-[450px] opacity-85" />
-      <div className="ambient-flare-pink top-[35%] right-[-100px] w-[400px] h-[400px] opacity-80" />
-      <div className="ambient-flare-red bottom-[-50px] right-[20%] w-[350px] h-[350px] opacity-75" />
+    <div className={`absolute inset-0 font-sans overflow-y-auto select-none relative scroll-smooth transition-all duration-300 ${
+      theme === "dark" ? "bg-[#0E0C0D] text-stone-100" : "bg-[#f7f5f2] text-stone-900"
+    }`} id="master-app-root">
+      
+      {/* Dynamic Background Festive & Cinematic Flares */}
+      <div className={flareClass1} />
+      <div className={flareClass2} />
+      <div className={flareClass3} />
       
       {/* GLOBAL HEADER BAR */}
-      <header className="sticky top-0 z-50 glass-panel-heavy bg-gradient-to-r from-[#1E010B]/90 to-[#0A001F]/90 border-b-2 border-gold-500/40 px-4 py-3 md:px-8 flex justify-between items-center backdrop-blur-xl">
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-10 h-10 bg-gradient-to-tr from-gold-400 via-pink-600 to-cinema-red rounded-xl flex items-center justify-center font-serif font-bold text-white text-xl shadow-lg shadow-pink-500/30 border border-gold-400/30">
-            A
+      <header className={`sticky top-0 z-50 border-b px-4 py-3 md:px-8 flex flex-col md:flex-row gap-3 justify-between items-center backdrop-blur-xl transition-colors duration-300 ${
+        theme === "dark" 
+          ? "border-red-600/20 bg-[#0E0C0D]/95 text-stone-100" 
+          : "border-stone-200 bg-[#f7f5f2]/95 text-stone-900"
+      }`}>
+        <div className="flex items-center gap-3 relative z-10 w-full md:w-auto">
+          <div className="w-10 h-10 bg-[#E50914] text-white flex items-center justify-center font-display font-black text-2xl tracking-tighter shadow-[0_0_20px_rgba(229,9,20,0.4)] rounded-lg hover:rotate-6 transition-all duration-300 shrink-0">
+            BV
           </div>
           <div>
             <h1 
               onClick={() => setActiveTab("home")}
-              className="text-xl md:text-2xl font-serif italic font-bold tracking-tight text-gold-400 cursor-pointer hover:text-gold-300 transition-colors flex items-center gap-1 gold-glow"
+              className="text-xl md:text-2xl font-display font-black tracking-tight cursor-pointer hover:text-red-500 transition-colors flex items-center gap-1"
             >
-              {lang === "en" ? (
-                <>
-                  Ananya's Fan Engine
-                  <span className="text-white font-sans not-italic text-[10px] font-extrabold bg-gradient-to-r from-pink-600 to-amber-500 border border-gold-400/40 px-2 py-0.5 rounded ml-1 tracking-normal uppercase shadow-[0_0_10px_rgba(219,39,119,0.5)]">MOD</span>
-                </>
-              ) : (
-                t.title
-              )}
+              <>
+                BollywoodVerse AI
+                <span className="text-white font-sans not-italic text-[9px] font-extrabold bg-gradient-to-r from-red-650 to-amber-500 px-1.5 py-0.5 rounded ml-1 tracking-normal uppercase shadow-[0_0_12px_rgba(229,9,20,0.6)] shrink-0">PRO</span>
+              </>
             </h1>
-            <span className="text-[10px] text-pink-300 uppercase tracking-widest block -mt-0.5 font-bold font-mono">
-              ★ Premium Colorful Bollywood Universe ★
+            <span className={`text-[8px] uppercase tracking-widest block -mt-0.5 font-bold font-mono ${
+              theme === "dark" ? "text-stone-400" : "text-stone-600"
+            }`}>
+              ★ PREMIUM CINEMATIC FAN SPHERE ★
             </span>
           </div>
         </div>
 
-        {/* Global User XP Rerank dashboard */}
-        <div className="flex items-center gap-4">
-          <div className="hidden lg:flex items-center gap-3 bg-[#33041C]/80 px-4 py-2 rounded-xl border border-gold-500/30 shadow-md">
+        {/* Global User XP Rerank dashboard and Action Controls */}
+        <div className="flex flex-wrap items-center gap-2.5 justify-end w-full md:w-auto">
+          {/* User profile capsule */}
+          {userProfile && (
+            <div className={`flex items-center gap-2 px-3 py-1 bg-[#E50914]/10 border border-[#E50914]/30 rounded-xl text-xs font-semibold ${
+              theme === "dark" ? "text-stone-300" : "text-stone-800"
+            }`}>
+              <span>🚀 Namaste, <strong className="text-red-500 font-bold">{userProfile.username}</strong></span>
+              <span className="text-[10px] bg-[#E50914] text-white px-2 py-0.5 rounded-full uppercase font-mono tracking-tighter font-extrabold">
+                {userProfile.favoriteActor.split(" ")[0]} Style
+              </span>
+            </div>
+          )}
+
+          <div className={`hidden lg:flex items-center gap-3 px-4 py-1.5 rounded-xl border shadow-md ${
+            theme === "dark" ? "bg-stone-900/90 border-red-500/20" : "bg-white border-stone-200"
+          }`}>
             <div className="text-right">
-              <div className="text-[10px] text-pink-200 uppercase font-mono mt-0.5">
-                {t.userLevel} <strong className="text-gold-300 font-bold">{profile.level}</strong>
+              <div className="text-[9px] text-stone-400 uppercase font-mono mt-0.5">
+                {t.userLevel} <strong className="text-red-500 font-bold">{profile.level}</strong>
               </div>
-              <div className="w-24 bg-pink-950/80 h-1.5 rounded-full mt-1 overflow-hidden" title={`${profile.xp % 100}% to next level`}>
-                <div className="bg-gradient-to-r from-gold-400 to-pink-500 h-full transition-all duration-300" style={{ width: `${profile.xp % 100}%` }} />
+              <div className="w-20 bg-stone-800 h-1.5 rounded-full mt-1 overflow-hidden" title={`${profile.xp % 100}% to next level`}>
+                <div className="bg-gradient-to-r from-red-600 to-amber-500 h-full transition-all duration-300" style={{ width: `${profile.xp % 100}%` }} />
               </div>
             </div>
-            <div className="h-6 w-px bg-gold-500/25" />
+            <div className="h-6 w-px bg-stone-700" />
             <div className="text-center">
-              <div className="text-[10px] text-pink-200 uppercase font-mono">Accumulated XP</div>
-              <div className="text-xs font-mono font-extrabold text-gold-300">{profile.xp} XP</div>
+              <div className="text-[9px] text-stone-400 uppercase font-mono">Accumulated XP</div>
+              <div className="text-xs font-mono font-extrabold text-[#D4AF37]">{profile.xp} XP</div>
             </div>
           </div>
+
+          {/* Theme switcher */}
+          <button
+            onClick={toggleTheme}
+            className={`p-2 border rounded-xl flex items-center justify-center transition text-xs font-bold cursor-pointer ${
+              theme === "dark" ? "border-stone-800 bg-stone-900 hover:bg-stone-800 text-amber-300" : "border-stone-200 bg-white hover:bg-stone-50 text-indigo-650"
+            }`}
+            title="Switch Visual Theme Mode"
+          >
+            {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+          </button>
 
           {/* Bilingual English / Hindi Switcher */}
           <button
             onClick={() => setLang(lang === "en" ? "hi" : "en")}
-            className="p-2 border border-gold-500/35 bg-gold-500/15 hover:bg-gold-500/25 text-gold-300 rounded-xl flex items-center gap-1.5 transition text-xs font-bold cursor-pointer"
+            className={`p-2 border rounded-xl flex items-center gap-1.5 transition text-xs font-bold cursor-pointer ${
+              theme === "dark" ? "border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-200" : "border-stone-200 bg-white hover:bg-stone-50 text-stone-800"
+            }`}
             title="Switch Language"
           >
-            <Languages className="w-4 h-4 text-pink-400" />
+            <Languages className="w-4 h-4 text-red-500" />
             <span className="font-mono uppercase">{lang === "en" ? "HI" : "EN"}</span>
+          </button>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="p-2 bg-stone-950/40 hover:bg-red-500/20 border border-stone-800 rounded-xl text-stone-400 hover:text-red-500 text-xs font-bold font-mono uppercase transition cursor-pointer"
+            title="Logout Session Preferences"
+          >
+            Logout
           </button>
         </div>
       </header>
 
       {/* LOWER NAVIGATION RAIL (RESPONSIVE CHIPS) */}
-      <nav className="cinematic-blur-nav py-3 px-4 md:px-8 overflow-x-auto whitespace-nowrap scrollbar-none flex items-center gap-2 sticky top-[65px] z-45 shadow-[0_4px_20px_rgba(215,28,68,0.15)] border-b border-gold-500/30">
+      <nav className={`border-b py-3.5 px-4 md:px-8 overflow-x-auto whitespace-nowrap scrollbar-none flex items-center gap-1.5 sticky top-[62px] z-45 backdrop-blur-md transition-colors ${
+        theme === "dark" ? "border-stone-850 bg-[#0E0C0D]/90" : "border-stone-200 bg-[#f7f5f2]/90"
+      }`}>
         <button
           onClick={() => setActiveTab("home")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "home" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "home" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           Dashboard
         </button>
         <button
           onClick={() => setActiveTab("explorer")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "explorer" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "explorer" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.movieExplorer}
         </button>
         <button
           onClick={() => setActiveTab("recommender")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "recommender" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "recommender" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.discover}
         </button>
         <button
           onClick={() => setActiveTab("mood")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "mood" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "mood" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.moodDiscover}
         </button>
         <button
           onClick={() => setActiveTab("actors")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "actors" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "actors" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.starUniverse}
         </button>
         <button
           onClick={() => setActiveTab("boxoffice")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "boxoffice" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "boxoffice" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.boxOfficeStats}
         </button>
         <button
           onClick={() => setActiveTab("timeline")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "timeline" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "timeline" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.timeline}
         </button>
         <button
           onClick={() => setActiveTab("predictor")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "predictor" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "predictor" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.predictor}
         </button>
         <button
           onClick={() => setActiveTab("chat")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "chat" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "chat" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.bollyGpt}
         </button>
         <button
           onClick={() => setActiveTab("quiz")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "quiz" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "quiz" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.quizArena}
         </button>
         <button
+          onClick={() => setActiveTab("songs")}
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "songs" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
+          }`}
+        >
+          {t.soundtracks}
+        </button>
+        <button
+          onClick={() => setActiveTab("arcade")}
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "arcade" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
+          }`}
+        >
+          Filmy Arcade 🎮
+        </button>
+        <button
           onClick={() => setActiveTab("admin")}
-          className={`px-4 py-2 rounded-xl text-xs font-display font-bold cursor-pointer transition-all duration-200 ${
-            activeTab === "admin" ? "bg-gradient-to-r from-gold-400 to-amber-500 text-stone-950 shadow-md shadow-gold-500/20" : "text-pink-100/80 hover:text-white hover:bg-pink-500/15"
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "admin" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
           }`}
         >
           {t.adminDashboard}
@@ -422,36 +590,199 @@ export default function App() {
         {/* TAB 1: HOMEPAGE / DASHBOARD VIEW */}
         {activeTab === "home" && (
           <div className="space-y-8 animate-fadeIn" id="home-dashboard-panel">
-            {/* Cinematic Hero Marquee Banner */}
-            <div className="glass-panel rounded-3xl p-8 md:p-12 border border-white/10 relative overflow-hidden light-sweep gold-border-glow select-all min-h-[320px] flex flex-col justify-center">
-              {/* Cinematic Background Image Layer */}
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1024&auto=format&fit=crop')] bg-cover bg-center opacity-25 z-0" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-transparent z-5" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] to-transparent z-5" />
-              
-              <div className="max-w-2xl space-y-4 relative z-10">
-                <span className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest block mb-1">
-                  ★ LUXURY ENTERTAINMENT ECOSYSTEM ★
-                </span>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight leading-none">
-                  {t.headline}
-                </h2>
-                <p className="text-xs md:text-sm text-white/70 leading-relaxed max-w-xl font-light">
-                  {t.subheadline}
+            
+            {/* FESTIVAL FOCUS MODE CHIPS SELECTOR BAR */}
+            <div className={`p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 transition-all ${
+              theme === "dark" ? "bg-stone-900/60 border-white/5" : "bg-white border-stone-200 shadow-sm"
+            }`} id="festival-focus-panel">
+              <div className="space-y-1 text-center md:text-left">
+                <h4 className="text-sm font-display font-black flex items-center justify-center md:justify-start gap-1.5 uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-400 to-red-500">
+                  <Sparkles className="w-4 h-4 text-amber-400 fill-current animate-spin-slow" />
+                  ⭐ Enter Festival Focus Mode
+                </h4>
+                <p className="text-[11px] text-stone-400 leading-none">
+                  Switch the entire interface theme and unlock festive recommended catalogs instantly.
                 </p>
-                <div className="flex flex-wrap gap-3 pt-2">
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 justify-center">
+                {[
+                  { id: "cinema", label: "Default Cinema 🎬" },
+                  { id: "diwali", label: "Diwali Lights 🪔" },
+                  { id: "holi", label: "Holi Colors 🎨" },
+                  { id: "eid", label: "Eid Mubarak 🌙" },
+                  { id: "valentine", label: "Valentine Love 💖" },
+                  { id: "patriotic", label: "Azadi Day 🇮🇳" }
+                ].map((item) => (
                   <button
-                    onClick={() => setActiveTab("explorer")}
-                    className="bg-[#D4AF37] text-black font-semibold px-6 py-2.5 rounded-full text-xs hover:scale-105 active:scale-95 transition cursor-pointer"
+                    key={item.id}
+                    onClick={() => handleSelectFestival(item.id)}
+                    className={`py-1.5 px-3.5 rounded-full text-xs font-bold font-display cursor-pointer transition ${
+                      festival === item.id
+                        ? "bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-md scale-105"
+                        : theme === "dark"
+                          ? "bg-stone-950 border border-stone-800 text-stone-400 hover:text-white"
+                          : "bg-stone-50 border border-stone-200 text-stone-600 hover:text-stone-900"
+                    }`}
                   >
-                    {t.exploreMovies}
+                    {item.label}
                   </button>
-                  <button
-                    onClick={() => setActiveTab("chat")}
-                    className="bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 px-6 py-2.5 rounded-full text-xs font-semibold text-white transition cursor-pointer"
-                  >
-                    {t.askAiAssistant}
-                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Cinematic Hero Marquee Banner (Netflix Billboard Mode) */}
+            <BollyverseHero 
+              onSelectMovie={handleSelectMovieTitle}
+              watchlist={profile.watchlist.map(w => w.movieId)}
+              onToggleWatchlist={handleToggleWatchlist}
+              theme={theme}
+            />
+
+            {/* Personalized greeting & festival customized collections row */}
+            <div className={`p-6 rounded-3xl border ${
+              theme === "dark" 
+                ? "bg-gradient-to-br from-stone-900/60 to-stone-950/80 border-white/5" 
+                : "bg-white border-stone-200 shadow-sm"
+            }`}>
+              <div className="space-y-2">
+                <span className="text-[9px] font-mono text-amber-550 block font-bold uppercase tracking-widest">
+                  ★ BOLLYVERSE PERSONALIZED AI SUMMARY ★
+                </span>
+                <h3 className="text-2xl font-display font-black tracking-tight flex items-center gap-2">
+                  Namaste, {userProfile?.username || "Filmy Buff"}! 🪐
+                </h3>
+                <p className="text-xs text-stone-400 leading-relaxed max-w-2xl font-sans">
+                  Welcome to your premium dashboard. Your style filter is locked to <strong className="text-red-500">{userProfile?.favoriteActor || "Shah Rukh Khan"} Style</strong>, and we are curating matches based on your favorite <strong className="text-amber-500">{userProfile?.favoriteGenre || "Romantic"}</strong> genre.
+                </p>
+              </div>
+
+              {/* Dynamic Festival list indicators */}
+              <div className="mt-6 pt-5 border-t border-white/5 space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] uppercase font-mono text-stone-500 font-bold block">
+                    ✨ CURRENT FESTIVAL FOCUS SPECIALS:
+                  </span>
+                  <span className="text-[10px] text-amber-400 font-serif lowercase italic">
+                    updated live to screen
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {festival === "diwali" && (
+                    <>
+                      <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/25 space-y-2 hover:border-amber-400 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Kabhi Khushi Kabhie Gham")}>
+                        <div className="text-lg">🪔</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Kabhi Khushi Kabhie Gham</strong>
+                        <p className="text-[10px] text-stone-400">The grandest Diwali family celebration, packed with lights, classic sangeets, and stars.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/25 space-y-2 hover:border-amber-400 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Om Shanti Om")}>
+                        <div className="text-lg">🕯️</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Om Shanti Om</strong>
+                        <p className="text-[10px] text-stone-400">Retro glamour and dramatic lights. Re-live the gorgeous 'Dhoom Taana' stage sparkles.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/25 space-y-2 hover:border-amber-400 cursor-pointer transition" onClick={() => { setSelectedSongToPlayId(90); setActiveTab("songs"); }}>
+                        <div className="text-lg">🪕</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Sensational Festive Soundtracks</strong>
+                        <p className="text-[10px] text-stone-400">High-energy rhythms to ignite your family gatherings with immediate dhol beats.</p>
+                      </div>
+                    </>
+                  )}
+                  {festival === "holi" && (
+                    <>
+                      <div className="p-4 rounded-2xl bg-pink-500/5 border border-pink-500/20 space-y-2 hover:border-pink-500 cursor-pointer transition" onClick={() => { setSelectedSongToPlayId(90); setActiveTab("songs"); }}>
+                        <div className="text-lg">🎨</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Balam Pichkari</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">The ultimate millennial color party anthem from Yeh Jawaani Hai Deewani.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-pink-500/5 border border-pink-500/20 space-y-2 hover:border-pink-500 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Yeh Jawaani Hai Deewani")}>
+                        <div className="text-lg">🕶️</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Yeh Jawaani Hai Deewani</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Youthful, dynamic, and colorful! Perfect sangeets and spectacular Spanish holidays.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-pink-500/5 border border-pink-500/20 space-y-2 hover:border-pink-500 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Sholay")}>
+                        <div className="text-lg">🔥</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Holi Ke Din Dil Khil Jate Hain</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Retro classic song where absolute colors and dramatic romance meet rustic action.</p>
+                      </div>
+                    </>
+                  )}
+                  {festival === "eid" && (
+                    <>
+                      <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-2 hover:border-emerald-500 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Bajrangi Bhaijaan")}>
+                        <div className="text-lg">🌙</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Bajrangi Bhaijaan</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">A classic masterpiece of pure love, humanity, and deep borders-crossing devotion.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-2 hover:border-emerald-500 cursor-pointer transition" onClick={() => { setSelectedSongToPlayId(90); setActiveTab("songs"); }}>
+                        <div className="text-lg">🕊️</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Sufi Peace Collection</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Beautiful ghazals and qawwalis to fill your space with calm spiritual lights.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 space-y-2 hover:border-emerald-500 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Jodha Akbar")}>
+                        <div className="text-lg">✨</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Jodha Akbar</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Grand royal sangeet, qawwali highlights, and legendary imperial romances.</p>
+                      </div>
+                    </>
+                  )}
+                  {festival === "valentine" && (
+                    <>
+                      <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 space-y-2 hover:border-rose-450 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Dilwale Dulhania Le Jayenge")}>
+                        <div className="text-lg">💖</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Dilwale Dulhania Le Jayenge</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">The golden milestone signature ddlj romance. Come, fall in love all over again.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 space-y-2 hover:border-rose-450 cursor-pointer transition" onClick={() => { setSelectedSongToPlayId(90); setActiveTab("songs"); }}>
+                        <div className="text-lg">🌧️</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Chaleya (Jawan)</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Modern romantic melody with spectacular acoustic overlays sung by Arijit Singh.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 space-y-2 hover:border-rose-450 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Dil To Pagal Hai")}>
+                        <div className="text-lg">💃</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Dil To Pagal Hai</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Classic dance drama and beautifully syncopated musical heartbeats.</p>
+                      </div>
+                    </>
+                  )}
+                  {festival === "patriotic" && (
+                    <>
+                      <div className="p-4 rounded-2xl bg-orange-500/5 border border-[#e2c66d]/20 space-y-2 hover:border-orange-500 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Lagaan")}>
+                        <div className="text-lg">🏏</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Lagaan</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">An Oscar-nominated action cricket breakthrough for dignity, pride, and rural hope.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-orange-500/5 border border-[#e2c66d]/20 space-y-2 hover:border-orange-500 cursor-pointer transition" onClick={() => handleSelectMovieTitle("Swades")}>
+                        <div className="text-lg">🇮🇳</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Swades (We, the People)</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">A classic NASA scientist returns to empower his native home with sustainable electricity.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-orange-500/5 border border-[#e2c66d]/20 space-y-2 hover:border-orange-500 cursor-pointer transition" onClick={() => { setSelectedSongToPlayId(90); setActiveTab("songs"); }}>
+                        <div className="text-lg">🥁</div>
+                        <strong className="text-xs text-stone-100 block font-bold">Patriotic Anthems</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Stirring orchestral, flute, and dhol arrangements honoring bravehearts.</p>
+                      </div>
+                    </>
+                  )}
+                  {festival === "cinema" && (
+                    <>
+                      <div className="p-4 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-2 hover:border-[#E50914] cursor-pointer transition" onClick={() => handleSelectMovieTitle("3 Idiots")}>
+                        <div className="text-lg">🎓</div>
+                        <strong className="text-xs text-stone-200 block font-bold">3 Idiots</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Hilarious and inspiring! Challenging conventional academic stress with friendship.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-2 hover:border-[#E50914] cursor-pointer transition" onClick={() => handleSelectMovieTitle("Zindagi Na Milegi Dobara")}>
+                        <div className="text-lg">✈️</div>
+                        <strong className="text-xs text-stone-200 block font-bold">Zindagi Na Milegi Dobara</strong>
+                        <p className="text-[10px] text-stone-400 font-sans">Live life with open sails on a luxurious road-trip itinerary through Spain.</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-stone-900/40 border border-stone-800 space-y-2 hover:border-[#E50914] cursor-pointer transition" onClick={() => { setSelectedSongToPlayId(90); setActiveTab("songs"); }}>
+                        <div className="text-lg">🎵</div>
+                        <strong className="text-xs text-stone-200 block font-bold">Trending Hot Soundtracks</strong>
+                        <p className="text-[10px] text-stone-100 font-sans italic">"Sajni Re" streaming on loops globally now.</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -459,101 +790,219 @@ export default function App() {
             {/* Quick Profile stats showcase */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* XP & level progress */}
-              <div className="glass-panel p-5 rounded-2xl border border-white/5 space-y-3">
-                <div className="text-xs uppercase font-mono text-gray-500">Level & Raging Status</div>
+              <div className={`p-5 rounded-2xl border space-y-3 ${
+                theme === "dark" ? "bg-stone-900/60 border-white/5" : "bg-white border-stone-200 shadow-sm"
+              }`}>
+                <div className="text-[11px] uppercase font-mono text-stone-500 font-bold block">Level & Raging Status</div>
                 <div className="flex justify-between items-end">
-                  <span className="text-3xl font-display font-bold text-white">Level {profile.level}</span>
-                  <span className="text-xs font-mono text-gold-400">{profile.xp % 100} / 100 XP to next level</span>
+                  <span className={`text-3xl font-display font-bold ${theme === "dark" ? "text-stone-100" : "text-stone-900"}`}>Level {profile.level}</span>
+                  <span className="text-xs font-mono text-[#D4AF37]">{profile.xp % 100} / 100 XP to next level</span>
                 </div>
-                <div className="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                  <div className="bg-gold-500 h-full transition-all duration-300" style={{ width: `${profile.xp % 100}%` }} />
+                <div className="w-full bg-stone-800 h-2 rounded-full overflow-hidden">
+                  <div className="bg-[#D4AF37] h-full transition-all duration-300" style={{ width: `${profile.xp % 100}%` }} />
                 </div>
-                <div className="text-[10px] text-gray-500 leading-relaxed font-sans">
+                <div className="text-[10px] text-stone-500 leading-relaxed font-sans">
                   Write critiques, request AI forecast reports or clear quizzes to load level progressions.
                 </div>
               </div>
 
               {/* Earned badges array */}
-              <div className="glass-panel p-5 rounded-2xl border border-white/5 space-y-3">
-                <div className="text-xs uppercase font-mono text-gray-500">Accumulated Badges</div>
+              <div className={`p-5 rounded-2xl border space-y-3 ${
+                theme === "dark" ? "bg-stone-900/60 border-white/5" : "bg-white border-stone-200 shadow-sm"
+              }`}>
+                <div className="text-[11px] uppercase font-mono text-stone-500 font-bold block">Accumulated Badges</div>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {profile.badges.map((bdg, idx) => (
                     <span 
                       key={idx} 
-                      className="bg-gold-500/10 border border-gold-400/25 text-gold-300 text-[10px] font-mono px-3 py-1 rounded-full flex items-center gap-1"
+                      className="bg-[#D4AF37]/10 border border-[#D4AF37]/25 text-[#D4AF37] text-[10px] font-mono px-3 py-1 rounded-full flex items-center gap-1"
                     >
-                      <Trophy className="w-3.5 h-3.5 text-gold-400" />
+                      <Trophy className="w-3.5 h-3.5 text-[#D4AF37]" />
                       {bdg}
                     </span>
                   ))}
                 </div>
-                <div className="text-[10px] text-gray-500 leading-relaxed font-sans">
+                <div className="text-[10px] text-stone-500 leading-relaxed font-sans">
                   Current Badges count: <strong>{profile.badges.length} Unlocked</strong>
                 </div>
               </div>
 
               {/* Watchlist Quick Summary */}
-              <div className="glass-panel p-5 rounded-2xl border border-white/5 space-y-3">
-                <div className="text-xs uppercase font-mono text-gray-500">{t.watchlist} Stats</div>
+              <div className={`p-5 rounded-2xl border space-y-3 ${
+                theme === "dark" ? "bg-stone-900/60 border-white/5" : "bg-white border-stone-200 shadow-sm"
+              }`}>
+                <div className="text-[11px] uppercase font-mono text-stone-500 font-bold block">{t.watchlist} Stats</div>
                 <div className="flex justify-between items-center pt-1">
                   <div>
-                    <span className="text-2xl font-mono font-bold text-white">{profile.watchlist.length}</span>
-                    <span className="text-xs text-gray-400 font-sans block">Saved Releases</span>
+                    <span className={`text-2xl font-mono font-bold ${theme === "dark" ? "text-stone-100" : "text-stone-900"}`}>{profile.watchlist.length}</span>
+                    <span className="text-xs text-stone-400 font-sans block">Saved Releases</span>
                   </div>
                   <div>
-                    <span className="text-2xl font-mono font-bold text-emerald-400">{profile.reviewCount}</span>
-                    <span className="text-xs text-gray-400 font-sans block">Reviews Submitted</span>
+                    <span className="text-2xl font-mono font-bold text-emerald-500">{profile.reviewCount}</span>
+                    <span className="text-xs text-stone-400 font-sans block">Reviews Submitted</span>
                   </div>
                 </div>
                 <button
                   onClick={() => setActiveTab("explorer")}
-                  className="w-full py-2 bg-cinema-dark/80 hover:bg-cinema-dark border border-white/10 text-xs text-center font-display font-medium rounded-xl cursor-default transition hover:border-gold-500/20"
+                  className="w-full py-2 bg-red-600 hover:bg-red-700 hover:border-red-500 border border-transparent text-xs text-center font-display font-medium text-white rounded-xl cursor-pointer transition text-center"
                 >
-                  Review or Saved item details in explorer tab.
+                  Sync Saved & Review items inside explorer ➔
                 </button>
               </div>
             </div>
 
-            {/* Home Subgrid: Trending block and Instant Mini Quiz */}
+            {/* Quick Spotify Soundtrack & Continued Listening media player card */}
+            <div className={`p-5 rounded-3xl border ${
+              theme === "dark" ? "bg-[#141414]/90 border-white/5" : "bg-white border-stone-200 shadow-sm"
+            }`}>
+              <div className="flex flex-col md:flex-row justify-between items-center gap-5">
+                <div className="flex items-center gap-3.5 w-full md:w-auto">
+                  {/* Decorative rotating vinyl record */}
+                  <div className="w-14 h-14 bg-stone-900 rounded-full border border-stone-800 flex items-center justify-center relative animate-spin-slow animate-duration-10000 shadow-lg shrink-0">
+                    <div className="w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 bg-stone-900 rounded-full" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] uppercase font-mono text-[#E50914] font-black tracking-widest block">Continuous Listening</span>
+                      {/* Animated playing indicator bars */}
+                      <div className="flex gap-0.5 items-end h-3">
+                        <div className="w-0.5 bg-[#E50914] h-2.5 animate-pulse" />
+                        <div className="w-0.5 bg-[#E50914] h-1.5 animate-pulse duration-700" />
+                        <div className="w-0.5 bg-[#E50914] h-3 animate-pulse duration-1000" />
+                        <div className="w-0.5 bg-[#E50914] h-2 animate-pulse duration-500" />
+                      </div>
+                    </div>
+                    <strong className={`text-base block ${theme === "dark" ? "text-stone-100" : "text-stone-900"}`}>
+                      Sajni re — <span className="font-sans font-medium text-stone-400 text-sm">Arijit Singh</span>
+                    </strong>
+                    <span className="text-[10px] text-stone-500 block">Album: Laapataa Ladies (2024) | Lead: Sparsh Srivastav</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2.5 w-full md:w-auto justify-end">
+                  <a
+                    href="https://www.youtube.com/results?search_query=Sajni+Laapataa+Ladies+Arijit+Singh+Song+Official"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 bg-red-650 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition duration-300 flex items-center gap-1.5 shadow-md"
+                  >
+                    Play on YouTube 🎬
+                  </a>
+                  <button
+                    onClick={() => {
+                      setSelectedSongToPlayId(90);
+                      setActiveTab("songs");
+                    }}
+                    className={`px-4 py-2.5 text-xs font-bold rounded-xl border transition ${
+                      theme === "dark" 
+                        ? "bg-transparent border-stone-800 hover:bg-stone-800 text-stone-300"
+                        : "bg-stone-50 border-stone-250 hover:bg-stone-100 text-stone-850"
+                    }`}
+                  >
+                    Open Jukebox Menu
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Home Subgrid: Trending block and Instant Mini Arcade Trigger Option */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               
-              {/* Trending movies carousel shortcut */}
+              {/* Trending movies & songs carousel shortcut */}
               <div className="space-y-4">
-                <h3 className="text-xl font-display font-semibold text-white flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-gold-400" />
+                <h3 className="text-xl font-display font-semibold flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-[#D4AF37]" />
                   {t.trending}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-[#141414] border border-white/5 p-4 rounded-xl space-y-2 hover:border-gold-500/20 cursor-pointer transition" onClick={() => setActiveTab("explorer")}>
-                    <div className="text-3xl">🎓</div>
-                    <h4 className="text-sm font-semibold text-white">3 Idiots</h4>
-                    <p className="text-[11px] text-gray-400 leading-relaxed font-sans line-clamp-2">Two friends search for their long-lost companion, challenging dogmas on education.</p>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-stone-900/40 border border-stone-850 p-4 rounded-xl space-y-2 hover:border-[#D4AF37]/30 cursor-pointer transition group" onClick={() => setActiveTab("explorer")}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🎓</span>
+                        <div>
+                          <span className="text-[8px] font-mono text-stone-500 uppercase block tracking-wider font-bold">MOVIE TRENDING</span>
+                          <h4 className="text-sm font-semibold text-white group-hover:text-[#D4AF37] transition">3 Idiots</h4>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-stone-400 leading-relaxed font-sans line-clamp-2">Two friends search for their lost companion, challenging traditional college stress.</p>
+                    </div>
+                    <div className="bg-stone-900/40 border border-stone-850 p-4 rounded-xl space-y-2 hover:border-[#D4AF37]/30 cursor-pointer transition group" onClick={() => setActiveTab("explorer")}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🤼</span>
+                        <div>
+                          <span className="text-[8px] font-mono text-stone-500 uppercase block tracking-wider font-bold">MOVIE TRENDING</span>
+                          <h4 className="text-sm font-semibold text-white group-hover:text-[#D4AF37] transition">Dangal</h4>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-stone-400 leading-relaxed font-sans line-clamp-2">A wrestling biopic that reached global Indian cinema box office milestones.</p>
+                    </div>
                   </div>
-                  <div className="bg-[#141414] border border-white/5 p-4 rounded-xl space-y-2 hover:border-gold-500/20 cursor-pointer transition" onClick={() => setActiveTab("explorer")}>
-                    <div className="text-3xl">🤼</div>
-                    <h4 className="text-sm font-semibold text-white">Dangal</h4>
-                    <p className="text-[11px] text-gray-400 leading-relaxed font-sans line-clamp-2">A wrestling biopic that broke worldwide collections milestones up to 2024 Crores.</p>
+
+                  {/* Real Trending song container */}
+                  <div 
+                    className="bg-stone-900/40 border border-[#E50914]/25 hover:border-[#E50914]/50 p-4 rounded-xl space-y-3 cursor-pointer transition-all duration-350 group" 
+                    onClick={() => {
+                      setSelectedSongToPlayId(90);
+                      setActiveTab("songs");
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-2xl animate-spin-slow">🎵</span>
+                        <div>
+                          <span className="text-[9px] font-mono text-[#E50914] uppercase font-black flex items-center gap-1 tracking-wider">
+                            <Sparkles className="w-3 h-3 text-red-500 inline" /> SENSATIONAL HIT • TRENDING SONG
+                          </span>
+                          <h4 className="text-sm font-bold text-white group-hover:text-[#E50914] transition flex items-center gap-1">
+                            Sajni <span className="font-sans font-medium text-xs text-stone-400">— from Laapataa Ladies (2024)</span>
+                          </h4>
+                        </div>
+                      </div>
+                      <span className="text-[9px] bg-[#E50914]/20 text-[#E50914] px-2 py-0.5 rounded-full border border-[#E50914]/30 font-sans font-extrabold uppercase tracking-wider animate-pulse">#1 Hit</span>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-stone-300 bg-stone-950 border border-stone-850 p-2 rounded-lg font-sans">
+                      <p className="truncate mr-2">"O sajni re... kaise katey din rati..." — Sung by <strong className="text-white">Arijit Singh</strong></p>
+                      <span 
+                        className="shrink-0 px-2.5 py-1 bg-red-650 hover:bg-red-700 text-white text-[9px] font-extrabold rounded uppercase tracking-wider transition flex items-center gap-1 shadow-md hover:scale-[1.03]"
+                      >
+                        Play Jukebox 🎬
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Instant Daily Quiz Widget */}
-              <div className="glass-panel p-6 rounded-2xl border border-gold-500/15 flex flex-col justify-between">
+              {/* Dynamic Arcade Parlor Widget Card */}
+              <div className={`p-6 rounded-2xl border flex flex-col justify-between ${
+                theme === "dark" ? "bg-stone-900/40 border-[#D4AF37]/15" : "bg-white border-stone-200"
+              }`}>
                 <div className="space-y-2">
-                  <h4 className="text-sm uppercase font-mono text-gold-400 tracking-wider flex items-center gap-1.5">
-                    <Trophy className="w-4 h-4 text-gold-400" />
-                    Daily Trivia Match Box
+                  <h4 className="text-sm uppercase font-mono text-amber-500 tracking-wider flex items-center gap-1.5 font-bold">
+                    <Trophy className="w-4 h-4 text-[#D4AF37]" />
+                    Filmy Interactive Arcade Hub
                   </h4>
-                  <p className="text-xs text-gray-300 leading-relaxed font-sans">
-                    Answer questions regarding dialogs, directors, actors, or classic movies instantly to earn secure high XP scores!
+                  <p className="text-xs text-stone-400 leading-relaxed font-sans">
+                    Spin the recommendation wheel, answer personality matches, generate custom playlist covers, and secure heavy XP boosts instantly!
                   </p>
                 </div>
-                <button
-                  onClick={() => setActiveTab("quiz")}
-                  className="w-full mt-4 py-2.5 bg-gold-500/10 text-gold-300 border border-gold-400/30 rounded-xl hover:bg-gold-500/20 text-xs font-display font-medium cursor-pointer"
-                >
-                  Enter Quiz Arena Now
-                </button>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => {
+                      setActiveTab("arcade");
+                    }}
+                    className="py-2.5 bg-gradient-to-r from-red-650 to-[#E50914] text-white rounded-xl hover:from-amber-600 hover:to-red-650 text-xs font-display font-medium cursor-pointer text-center"
+                  >
+                    Enter Arcade Parlor 🎮
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("quiz")}
+                    className="py-2.5 bg-stone-950 hover:bg-stone-900 border border-stone-850 text-stone-300 rounded-xl text-xs font-display cursor-pointer"
+                  >
+                    Play Trivia Quizzes
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -613,12 +1062,27 @@ export default function App() {
                   <h4 className="text-sm uppercase font-mono text-gold-400 tracking-wider">Similar Suggested Movies</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {aiRecommendations.similarMovies.map((sm: any, idx: number) => (
-                      <div key={idx} className="bg-cinema-dark/50 border border-white/5 rounded-2xl p-4 space-y-2">
+                      <div key={idx} className="bg-cinema-dark/50 border border-white/5 rounded-2xl p-4 space-y-3">
                         <div className="flex justify-between items-start">
                           <h5 className="font-display font-bold text-white text-sm">{sm.title}</h5>
                           <span className="text-[10px] font-mono text-gray-500">{sm.year}</span>
                         </div>
                         <p className="text-xs text-gray-300 leading-relaxed font-sans">{sm.reason}</p>
+                        
+                        {Array.isArray(sm.songs) && sm.songs.length > 0 && (
+                          <div className="pt-2 border-t border-white/5 space-y-1">
+                            <span className="text-[10px] text-pink-300 font-mono font-extrabold flex items-center gap-1 uppercase tracking-wider">
+                              <Music className="w-3 h-3 text-gold-400" /> Suggested hit tracks
+                            </span>
+                            <div className="flex flex-wrap gap-1">
+                              {sm.songs.map((song: string, sIdx: number) => (
+                                <span key={sIdx} className="bg-pink-950/40 border border-gold-500/20 rounded-lg px-2 py-0.5 text-[10px] text-amber-100 font-medium">
+                                  🎵 {song}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -722,6 +1186,21 @@ export default function App() {
                       <p className="text-xs text-gray-300 font-sans mt-2.5 leading-relaxed">
                         {mr.reason}
                       </p>
+
+                      {Array.isArray(mr.songs) && mr.songs.length > 0 && (
+                        <div className="pt-2 border-t border-white/5 space-y-1 mt-3">
+                          <span className="text-[10px] text-pink-300 font-mono font-extrabold flex items-center gap-1 uppercase tracking-wider">
+                            <Music className="w-3 h-3 text-gold-400" /> Suggested hit tracks
+                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {mr.songs.map((song: string, sIdx: number) => (
+                              <span key={sIdx} className="bg-pink-950/40 border border-gold-500/10 rounded-lg px-2 py-0.5 text-[10px] text-amber-100 font-medium">
+                                🎵 {song}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex justify-between items-center border-t border-white/5 pt-3 mt-4 text-[10px] font-mono text-gray-500">
@@ -842,6 +1321,29 @@ export default function App() {
         {/* TAB 10: QUIZ ARENA */}
         {activeTab === "quiz" && (
           <QuizArena onRegisterXp={handleRegisterXp} userProfile={profile} />
+        )}
+
+        {/* TAB 10.5: SONGS PLAYLIST & SOUNDTRACKS */}
+        {activeTab === "songs" && (
+          <SongsJukebox 
+            onRegisterXp={handleRegisterXp} 
+            onSelectMovie={handleSelectMovieTitle} 
+            autoPlaySongId={selectedSongToPlayId}
+            onClearAutoPlay={() => setSelectedSongToPlayId(null)}
+          />
+        )}
+
+        {/* TAB 10.6: FILMY ARCADE */}
+        {activeTab === "arcade" && (
+          <BollyverseArcade 
+            onRegisterXp={handleRegisterXp} 
+            onSelectMovie={handleSelectMovieTitle}
+            onPlaySong={(songId) => {
+              setSelectedSongToPlayId(songId);
+              setActiveTab("songs");
+            }}
+            theme={theme}
+          />
         )}
 
         {/* TAB 11: ADMIN STRUTURAL CONTROL PANEL */}

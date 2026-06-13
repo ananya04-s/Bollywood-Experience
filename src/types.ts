@@ -18,6 +18,7 @@ export interface Movie {
   isYetToRelease?: boolean;
   trailerUrl?: string;
   releaseDate?: string;
+  songs?: string[];
 }
 
 export interface UserReview {
@@ -82,3 +83,16 @@ export interface QuizQuestion {
   explanation: string;
   xpPoints: number;
 }
+
+export interface Song {
+  song_id: number;
+  song_title: string;
+  movie: string;
+  year: number;
+  singer: string;
+  genre: string;
+  mood: string;
+  lead_actor: string;
+  lead_actress: string;
+}
+

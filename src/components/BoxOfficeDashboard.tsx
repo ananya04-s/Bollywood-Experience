@@ -36,8 +36,8 @@ export default function BoxOfficeDashboard() {
   if (loading || !data) {
     return (
       <div className="text-center py-12 text-white">
-        <RefreshCw className="w-8 h-8 text-gold-500 animate-spin mx-auto" />
-        <p className="text-xs text-gray-400 mt-2 font-mono">Loading film financial matrices...</p>
+        <RefreshCw className="w-8 h-8 text-[#E50914] animate-spin mx-auto" />
+        <p className="text-xs text-stone-400 mt-2 font-mono">Loading film financial matrices...</p>
       </div>
     );
   }
@@ -62,36 +62,36 @@ export default function BoxOfficeDashboard() {
     shareValue: Math.round(act.share * rate)
   }));
 
-  const colors = ["#ca982e", "#debf60", "#ea983d", "#10b981", "#8b5cf6", "#ec4899", "#3b82f6"];
+  const colors = ["#E50914", "#A5070F", "#7F050A", "#4A0306", "#2D0A0C", "#888888", "#5c5c5c"];
 
   return (
     <div className="space-y-6 text-white" id="boxoffice-stats-workspace">
       {/* Metrics Bar with interactive toggle */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gold-500/20 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-850 pb-4">
         <div>
-          <h2 className="text-xl font-display font-semibold text-white flex items-center gap-2">
-            <BarChart2 className="w-5 h-5 text-gold-400" />
+          <h2 className="text-xl font-sans font-black text-white flex items-center gap-2">
+            <BarChart2 className="w-5 h-5 text-[#E50914] animate-pulse" />
             Box Office Analytics Dashboard
           </h2>
-          <p className="text-xs text-gray-400 mt-1 font-sans">
+          <p className="text-xs text-stone-400 mt-1 font-sans">
             Interactive financial models auditing Bollywood's worldwide collections, growth trends, and actor rankings.
           </p>
         </div>
 
         {/* Currency filters toggle */}
-        <div className="bg-cinema-dark border border-gold-500/25 p-1 rounded-xl flex items-center self-start md:self-auto shadow-md">
+        <div className="bg-stone-950 border border-stone-850 p-1 rounded-xl flex items-center self-start md:self-auto shadow-md">
           <button
             onClick={() => setCurrency("INR")}
-            className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition ${
-              currency === "INR" ? "bg-gold-500 text-cinema-dark" : "text-gray-400 hover:text-white"
+            className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition cursor-pointer ${
+              currency === "INR" ? "bg-[#E50914] text-white" : "text-stone-400 hover:text-white"
             }`}
           >
             INR (Crore)
           </button>
           <button
             onClick={() => setCurrency("USD")}
-            className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition ${
-              currency === "USD" ? "bg-gold-500 text-cinema-dark" : "text-gray-400 hover:text-white"
+            className={`px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition cursor-pointer ${
+              currency === "USD" ? "bg-[#E50914] text-white" : "text-stone-400 hover:text-white"
             }`}
           >
             USD ($ Million)
@@ -101,43 +101,43 @@ export default function BoxOfficeDashboard() {
 
       {/* Quick Core Financial Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-panel p-4 rounded-xl border border-gold-500/10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-gold-400/10 rounded-lg flex items-center justify-center border border-gold-500/20">
-            <DollarSign className="w-5 h-5 text-gold-400" />
+        <div className="bg-[#181818] p-4.5 rounded-2xl border border-stone-800 flex items-center gap-3 shadow-md">
+          <div className="w-10 h-10 bg-[#E50914]/10 rounded-lg flex items-center justify-center border border-[#E50914]/20 text-[#E50914]">
+            <DollarSign className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] uppercase font-mono text-gray-500">Record Lifetime Grosser</div>
-            <div className="text-sm font-semibold text-white">Dangal (2024 Cr)</div>
+            <div className="text-[10px] uppercase font-mono text-stone-500 font-bold">Record Lifetime Grosser</div>
+            <div className="text-xs font-bold text-white font-sans mt-0.5">Dangal (2024 Cr)</div>
           </div>
         </div>
 
-        <div className="glass-panel p-4 rounded-xl border border-gold-500/10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-emerald-400/10 rounded-lg flex items-center justify-center border border-emerald-500/20">
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
+        <div className="bg-[#181818] p-4.5 rounded-2xl border border-stone-800 flex items-center gap-3 shadow-md">
+          <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center border border-emerald-500/20 text-emerald-400">
+            <TrendingUp className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] uppercase font-mono text-gray-500">Industry CAGR (Est.)</div>
-            <div className="text-sm font-semibold text-white">+11.2% Yearly Growth</div>
+            <div className="text-[10px] uppercase font-mono text-stone-500 font-bold">Industry CAGR (Est.)</div>
+            <div className="text-xs font-bold text-white font-sans mt-0.5">+11.2% Yearly Growth</div>
           </div>
         </div>
 
-        <div className="glass-panel p-4 rounded-xl border border-gold-500/10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-400/10 rounded-lg flex items-center justify-center border border-purple-500/20">
-            <Layers className="w-5 h-5 text-purple-400" />
+        <div className="bg-[#181818] p-4.5 rounded-2xl border border-stone-800 flex items-center gap-3 shadow-md">
+          <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center border border-purple-500/20 text-purple-400">
+            <Layers className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] uppercase font-mono text-gray-500">Leading Genre</div>
-            <div className="text-sm font-semibold text-white">Action & Thrillers (42%)</div>
+            <div className="text-[10px] uppercase font-mono text-stone-500 font-bold">Leading Genre</div>
+            <div className="text-xs font-bold text-white font-sans mt-0.5">Action & Thrillers (42%)</div>
           </div>
         </div>
 
-        <div className="glass-panel p-4 rounded-xl border border-gold-500/10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-gold-400/10 rounded-lg flex items-center justify-center border border-gold-500/20">
-            <Calendar className="w-5 h-5 text-gold-400" />
+        <div className="bg-[#181818] p-4.5 rounded-2xl border border-stone-800 flex items-center gap-3 shadow-md">
+          <div className="w-10 h-10 bg-[#E50914]/10 rounded-lg flex items-center justify-center border border-[#E50914]/20 text-[#E50914]">
+            <Calendar className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] uppercase font-mono text-gray-500">Peak Market Revenue</div>
-            <div className="text-sm font-semibold text-white">2023 Blockbuster Year</div>
+            <div className="text-[10px] uppercase font-mono text-stone-500 font-bold">Peak Market Revenue</div>
+            <div className="text-xs font-bold text-white font-sans mt-0.5">2023 Blockbuster Year</div>
           </div>
         </div>
       </div>
@@ -146,62 +146,62 @@ export default function BoxOfficeDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* BAR CHART: Global Top-grossing blockbusters */}
-        <div className="bg-cinema-dark/40 border border-white/5 p-5 rounded-2xl space-y-4">
+        <div className="bg-[#181818] border border-stone-800 p-5 rounded-3xl space-y-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs uppercase font-mono text-gold-400 tracking-wider flex items-center gap-1.5">
-              <Award className="w-4 h-4 text-gold-400" />
+            <h3 className="text-xs uppercase font-sans font-black text-white tracking-wider flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-[#E50914] animate-pulse" />
               Top Grossing Worldwide Blockbusters
             </h3>
-            <span className="text-[10px] text-gray-500 font-mono">Gross value in {unitLabel}</span>
+            <span className="text-[10px] text-stone-500 font-mono">Gross value in {unitLabel}</span>
           </div>
           <div className="h-60 text-xs font-mono">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={topGrossingFormatted} margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
-                <XAxis dataKey="title" stroke="#4b5563" />
-                <YAxis stroke="#4b5563" />
+                <XAxis dataKey="title" stroke="#444444" />
+                <YAxis stroke="#444444" />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: "#0f0f0f", border: "1px solid rgba(218, 191, 96, 0.2)", borderRadius: "8px" }}
-                  labelStyle={{ color: "#d4aa3b" }}
+                  contentStyle={{ backgroundColor: "#141414", border: "1px solid #262626", borderRadius: "12px" }}
+                  labelStyle={{ color: "#E50914" }}
                 />
                 <Legend />
-                <Bar name="Worldwide Gross Collection" dataKey="grossValue" fill="#ca982e" radius={[4, 4, 0, 0]} />
-                <Bar name="Production Budget" dataKey="budgetValue" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                <Bar name="Worldwide Gross Collection" dataKey="grossValue" fill="#E50914" radius={[4, 4, 0, 0]} />
+                <Bar name="Production Budget" dataKey="budgetValue" fill="#444444" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* AREA CHART: Year-wise overall market returns */}
-        <div className="bg-cinema-dark/40 border border-white/5 p-5 rounded-2xl space-y-4">
+        <div className="bg-[#181818] border border-stone-800 p-5 rounded-3xl space-y-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs uppercase font-mono text-gold-400 tracking-wider flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-gold-400" />
+            <h3 className="text-xs uppercase font-sans font-black text-white tracking-wider flex items-center gap-1.5">
+              <Calendar className="w-4 h-4 text-[#E50914]" />
               Year-wise Industry Net Revenue (2010 - 2026)
             </h3>
-            <span className="text-[10px] text-gray-500 font-mono">Net industry collections in {unitLabel}</span>
+            <span className="text-[10px] text-stone-500 font-mono">Net industry collections in {unitLabel}</span>
           </div>
           <div className="h-60 text-xs font-mono">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={timelineFormatted} margin={{ left: -15, right: 10, top: 10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="revColor" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ca982e" stopOpacity={0.4}/>
-                    <stop offset="95%" stopColor="#ca982e" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#E50914" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#E50914" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="year" stroke="#4b5563" />
-                <YAxis stroke="#4b5563" />
-                <Tooltip contentStyle={{ backgroundColor: "#0f0f0f", border: "1px solid rgba(218, 191, 96, 0.2)" }} />
-                <Area type="monotone" name="Total Revenue Stream" dataKey="revenueValue" stroke="#ca982e" fillOpacity={1} fill="url(#revColor)" strokeWidth={2.5} />
+                <XAxis dataKey="year" stroke="#444444" />
+                <YAxis stroke="#444444" />
+                <Tooltip contentStyle={{ backgroundColor: "#141414", border: "1px solid #262626" }} />
+                <Area type="monotone" name="Total Revenue Stream" dataKey="revenueValue" stroke="#E50914" fillOpacity={1} fill="url(#revColor)" strokeWidth={2.5} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* PIE CHART / LIST: Genre Revenue splits */}
-        <div className="bg-cinema-dark/40 border border-white/5 p-5 rounded-2xl space-y-4">
-          <h3 className="text-xs uppercase font-mono text-gold-400 tracking-wider flex items-center gap-1.5">
-            <PieIcon className="w-4 h-4 text-gold-400" />
+        <div className="bg-[#181818] border border-stone-800 p-5 rounded-3xl space-y-4 shadow-xl">
+          <h3 className="text-xs uppercase font-sans font-black text-white tracking-wider flex items-center gap-1.5">
+            <PieIcon className="w-4 h-4 text-[#E50914]" />
             Genre Market Revenue Shares Split
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-6">
@@ -222,19 +222,19 @@ export default function BoxOfficeDashboard() {
                       <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "#0f0f0f", border: "1px solid rgba(218, 191, 96, 0.2)" }} />
+                  <Tooltip contentStyle={{ backgroundColor: "#141414", border: "1px solid #262626" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             
             <div className="space-y-2">
               {data.genreRevenueShare.map((gr, idx) => (
-                <div key={idx} className="flex items-center justify-between p-2 rounded-lg bg-cinema-dark/50 border border-white/5 text-xs">
+                <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-stone-900/50 border border-stone-850 text-xs">
                   <div className="flex items-center gap-2">
                     <span>{gr.icon}</span>
-                    <span className="font-display text-gray-300 font-medium">{gr.genre}</span>
+                    <span className="font-sans text-stone-300 font-bold">{gr.genre}</span>
                   </div>
-                  <strong className="text-gold-300 font-mono">{gr.percentage}%</strong>
+                  <strong className="text-white font-mono">{gr.percentage}%</strong>
                 </div>
               ))}
             </div>
@@ -242,29 +242,29 @@ export default function BoxOfficeDashboard() {
         </div>
 
         {/* BAR CHART: Actor Share Collections ranking */}
-        <div className="bg-cinema-dark/40 border border-white/5 p-5 rounded-2xl space-y-4">
+        <div className="bg-[#181818] border border-stone-800 p-5 rounded-3xl space-y-4 shadow-xl">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs uppercase font-mono text-gold-400 tracking-wider flex items-center gap-1.5">
-              <TrendingUp className="w-4 h-4 text-gold-400" />
+            <h3 className="text-xs uppercase font-sans font-black text-white tracking-wider flex items-center gap-1.5">
+              <TrendingUp className="w-4 h-4 text-[#E50914]" />
               Actor Gross Collection Cumulative Share
             </h3>
-            <span className="text-[10px] text-gray-500 font-mono">Aggregate in {unitLabel}</span>
+            <span className="text-[10px] text-stone-500 font-mono">Aggregate in {unitLabel}</span>
           </div>
           <div className="h-48 text-xs font-mono">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={actorShareFormatted} layout="vertical" margin={{ left: -15, right: 10, top: 10, bottom: 0 }}>
-                <XAxis type="number" stroke="#4b5563" />
-                <YAxis dataKey="label" type="category" stroke="#4b5563" />
-                <Tooltip contentStyle={{ backgroundColor: "#0f0f0f", border: "1px solid rgba(218, 191, 96, 0.2)", borderRadius: "8px" }} />
-                <Bar name="Lifetime Collection" dataKey="shareValue" fill="#ca982e" radius={[0, 4, 4, 0]}>
+                <XAxis type="number" stroke="#444444" />
+                <YAxis dataKey="label" type="category" stroke="#444444" />
+                <Tooltip contentStyle={{ backgroundColor: "#141414", border: "1px solid #262626", borderRadius: "12px" }} />
+                <Bar name="Lifetime Collection" dataKey="shareValue" fill="#E50914" radius={[0, 4, 4, 0]}>
                   {actorShareFormatted.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === 0 ? "#ca982e" : index === 1 ? "#debf60" : "#aa7422"} />
+                    <Cell key={`cell-${index}`} fill={index === 0 ? "#E50914" : index === 1 ? "#A5070F" : "#7F050A"} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-[10px] text-gray-550 leading-relaxed italic text-center">
+          <p className="text-[10px] text-stone-550 leading-relaxed italic text-center">
             *Audited from 2000-2026 worldwide major film releases, charting first-tier billing cast collections.
           </p>
         </div>

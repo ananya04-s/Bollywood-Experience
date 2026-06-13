@@ -388,7 +388,7 @@ async function startServer() {
     try {
       const prompt = `You are BollywoodVerse AI, an expert Bollywood film researcher and cinema recommendations analyst.
 The user likes the following movies: [${moviesQuery}].
-Provide highly specific, high-concept, personalized recommendations based on these tastes.
+Provide highly specific, high-concept, personalized recommendations based on these tastes. Also suggest 2-3 of the most signature tracks or songs to listen to for each recommended movie.
 
 Return a valid JSON object matching this schema:
 {
@@ -398,7 +398,8 @@ Return a valid JSON object matching this schema:
       "year": 2024,
       "reason": "Explain in 1-2 engaging lines why this matches their love for ${moviesQuery} directly, referencing specific themes or styles.",
       "genre": ["Genre1", "Genre2"],
-      "rating": 8.1
+      "rating": 8.1,
+      "songs": ["Famous Sound Track 1", "Famous Sound Track 2"]
     }
   ],
   "similarActors": [
@@ -415,7 +416,7 @@ Return a valid JSON object matching this schema:
   ]
 }
 
-Only return raw JSON. No markdown backticks, no comments. Just highly accurate Bollywood recommendations.`;
+Only return raw JSON. No markdown backticks, no comments. Just highly accurate Bollywood recommendations with hit soundtrack lists.`;
 
       const responseText = await generateGeminiContent({
         contents: prompt,
@@ -436,14 +437,16 @@ Only return raw JSON. No markdown backticks, no comments. Just highly accurate B
             year: 2019,
             genre: ["Biography", "Drama"],
             rating: 8.0,
-            reason: `Based on your love for ${moviesQuery}, this film's passionate message about education, social change, and the pursuit of excellence will resonate deeply with you.`
+            reason: `Based on your love for ${moviesQuery}, this film's passionate message about education, social change, and the pursuit of excellence will resonate deeply with you.`,
+            songs: ["Jugraafiya", "Basanti No Dance", "Paisa"]
           },
           {
             title: "Chak De! India",
             year: 2007,
             genre: ["Sports", "Drama"],
             rating: 8.2,
-            reason: "Provides the same high-velocity emotional adrenaline and team unity as your specified movies, with Shah Rukh Khan delivering a career-defining performance."
+            reason: "Provides the same high-velocity emotional adrenaline and team unity as your specified movies, with Shah Rukh Khan delivering a career-defining performance.",
+            songs: ["Chak De! India", "Badal Pe Paon Hain", "Maula Mere Lele Meri Jaan"]
           }
         ],
         similarActors: [
@@ -469,7 +472,7 @@ Only return raw JSON. No markdown backticks, no comments. Just highly accurate B
     try {
       const prompt = `You are BollywoodVerse AI recommendation system. 
 The user's current mood is: [${mood}].
-Recommend 4 excellent, genuine Bollywood movies (both recent or classics) that fit this mood perfectly.
+Recommend 4 excellent, genuine Bollywood movies (both recent or classics) that fit this mood perfectly. For each recommended movie, suggest 2-3 of the most signature tracks or songs to listen to.
 
 Return a valid JSON array of objects matched to this schema:
 [
@@ -479,7 +482,8 @@ Return a valid JSON array of objects matched to this schema:
     "genre": ["Genre1", "Genre2"],
     "rating": 8.0,
     "tagline": "A quick punchy marketing hook line",
-    "reason": "1 sentence explanation of why this movie fits the '${mood}' vibe perfectly."
+    "reason": "1 sentence explanation of why this movie fits the '${mood}' vibe perfectly.",
+    "songs": ["Iconic Song 1", "Iconic Song 2"]
   }
 ]
 
@@ -500,24 +504,24 @@ Do not include any extra text, only raw JSON.`;
       let list = [];
       if (mood === "Motivated") {
         list = [
-          { title: "Chak De! India", year: 2007, genre: ["Drama", "Sports"], rating: 8.2, tagline: "Sattar Minute!", reason: "The iconic locker room speech and sheer sportsmanship will charge your motivation levels to the absolute maximum!" },
-          { title: "Bhaag Milkha Bhaag", year: 2013, genre: ["Biography", "Drama"], rating: 8.2, tagline: "The Flying Sikh.", reason: "Farhan Akhtar's rigorous run as Milkha Singh teaches resilience, discipline, and ultimate victory." }
+          { title: "Chak De! India", year: 2007, genre: ["Drama", "Sports"], rating: 8.2, tagline: "Sattar Minute!", reason: "The iconic locker room speech and sheer sportsmanship will charge your motivation levels to the absolute maximum!", songs: ["Chak De! India (Title)", "Badal Pe Paon Hain"] },
+          { title: "Bhaag Milkha Bhaag", year: 2013, genre: ["Biography", "Drama"], rating: 8.2, tagline: "The Flying Sikh.", reason: "Farhan Akhtar's rigorous run as Milkha Singh teaches resilience, discipline, and ultimate victory.", songs: ["Zinda", "Bhaag Milkha Bhaag Anthem"] }
         ];
       } else if (mood === "Romantic") {
         list = [
-          { title: "Dilwale Dulhania Le Jayenge", year: 1995, genre: ["Romance", "Musical"], rating: 8.0, tagline: "Come, fall in love.", reason: "The quintessential golden dream of mustard fields and SRK's signature stretch-arms gesture." },
-          { title: "Yeh Jawaani Hai Deewani", year: 2013, genre: ["Romance", "Comedy"], rating: 7.1, tagline: "Live life to the fullest.", reason: "Elegant landscapes of Manali paired with high-energy dance tracks and timeless heart-melting moments." }
+          { title: "Dilwale Dulhania Le Jayenge", year: 1995, genre: ["Romance", "Musical"], rating: 8.0, tagline: "Come, fall in love.", reason: "The quintessential golden dream of mustard fields and SRK's signature stretch-arms gesture.", songs: ["Tujhe Dekha Toh Yeh Jaana", "Mehndi Laga Ke Rakhna"] },
+          { title: "Yeh Jawaani Hai Deewani", year: 2013, genre: ["Romance", "Comedy"], rating: 7.1, tagline: "Live life to the fullest.", reason: "Elegant landscapes of Manali paired with high-energy dance tracks and timeless heart-melting moments.", songs: ["Badtameez Dil", "Kabira", "Subhanallah"] }
         ];
       } else if (mood === "Thriller") {
         list = [
-          { title: "Drishyam", year: 2015, genre: ["Mystery", "Thriller"], rating: 8.2, tagline: "2nd October school trip.", reason: "A father creating an airtight timeline to protect his family will keep you on the absolute edge of your seat." },
-          { title: "Andhadhun", year: 2018, genre: ["Crime", "Comedy", "Thriller"], rating: 8.2, tagline: "He can see, or can he?", reason: "A blind pianist who witness a murder leads you down a rabbit hole of brilliant suspense and black comedy." }
+          { title: "Drishyam", year: 2015, genre: ["Mystery", "Thriller"], rating: 8.2, tagline: "2nd October school trip.", reason: "A father creating an airtight timeline to protect his family will keep you on the absolute edge of your seat.", songs: ["Drishyam Title Song", "Carbon Copy"] },
+          { title: "Andhadhun", year: 2018, genre: ["Crime", "Comedy", "Thriller"], rating: 8.2, tagline: "He can see, or can he?", reason: "A blind pianist who witness a murder leads you down a rabbit hole of brilliant suspense and black comedy.", songs: ["Naina Da Kya Kasoor", "Andhadhun Title Track"] }
         ];
       } else {
         // generic
         list = [
-          { title: "3 Idiots", year: 2009, genre: ["Comedy", "Family"], rating: 8.4, tagline: "All is well!", reason: "Perfect for any mood, combining laughs, deep cries, and inspiring college mischief." },
-          { title: "Zindagi Na Milegi Dobara", year: 2011, genre: ["Comedy", "Adventure"], rating: 8.2, tagline: "Conquer your fear, live your life.", reason: "A refreshing, cinematic breeze that instantly relaxes your mind with Spanish diving, poetry, and tomato festivals." }
+          { title: "3 Idiots", year: 2009, genre: ["Comedy", "Family"], rating: 8.4, tagline: "All is well!", reason: "Perfect for any mood, combining laughs, deep cries, and inspiring college mischief.", songs: ["Aal Izz Well", "Give Me Some Sunshine"] },
+          { title: "Zindagi Na Milegi Dobara", year: 2011, genre: ["Comedy", "Adventure"], rating: 8.2, tagline: "Conquer your fear, live your life.", reason: "A refreshing, cinematic breeze that instantly relaxes your mind with Spanish diving, poetry, and tomato festivals.", songs: ["Senorita", "Khaabon Ke Parindey"] }
         ];
       }
       res.json({ mood, recommendations: list, isFallback: true });

@@ -137,33 +137,33 @@ export default function ReviewSentimentAnalyzer({ movieId, movieTitle, onRegiste
   return (
     <div className="space-y-6 text-white" id={`reviews-workspace-${movieId}`}>
       {/* Review stats and actions */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gold-500/10 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-850 pb-4">
         <div>
-          <h3 className="text-xl font-display font-semibold text-white flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-gold-400" />
+          <h3 className="text-lg font-sans font-black text-white flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-[#E50914]" />
             Audience Reviews & Sentiment Analysis
           </h3>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-stone-400 mt-1">
             Read what other film students and fans think, or submit your own professional critique.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setFormOpen(!formOpen)}
-            className="px-4 py-2 bg-gold-600 hover:bg-gold-500 transition-all text-cinema-dark font-display font-medium rounded-lg text-xs flex items-center gap-1.5 cursor-pointer shadow"
+            className="px-4 py-2 bg-[#E50914] hover:bg-[#b00710] transition-all text-white font-sans font-bold rounded-lg text-xs flex items-center gap-1.5 cursor-pointer shadow-lg"
           >
             <Plus className="w-4 h-4" />
-            Write Review
+            Write Critique
           </button>
           <button
             onClick={runAiSentimentAnalysis}
             disabled={analyzing}
-            className="px-4 py-2 border border-gold-500/30 hover:border-gold-400 bg-gold-500/10 hover:bg-gold-500/20 text-gold-300 font-display font-medium rounded-lg text-xs flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 border border-stone-800 bg-stone-900 hover:bg-stone-800 text-stone-200 font-sans font-bold rounded-lg text-xs flex items-center gap-1.5 cursor-pointer transition duration-300"
           >
             {analyzing ? (
-              <RefreshCw className="w-4 h-4 animate-spin" />
+              <RefreshCw className="w-4 h-4 animate-spin text-[#E50914]" />
             ) : (
-              <Sparkles className="w-4 h-4 text-gold-400" />
+              <Sparkles className="w-4 h-4 text-[#E50914]" />
             )}
             Run AI Sentiment Analyzer
           </button>
@@ -172,22 +172,22 @@ export default function ReviewSentimentAnalyzer({ movieId, movieTitle, onRegiste
 
       {/* Review Input Form */}
       {formOpen && (
-        <form onSubmit={submitReview} className="bg-cinema-dark/50 border border-gold-500/20 rounded-xl p-5 space-y-4 animate-fadeIn">
-          <h4 className="text-sm font-display font-semibold text-gold-300">Submit Film Critique & Gain +25 XP</h4>
+        <form onSubmit={submitReview} className="bg-[#141414] border border-stone-850 rounded-xl p-5 space-y-4 animate-fadeIn">
+          <h4 className="text-sm font-sans font-bold text-[#E50914]">Submit Film Critique & Gain +25 XP</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs text-gray-400">Reviewer Name/Handle</label>
+              <label className="text-xs text-stone-400 font-medium">Reviewer Name/Handle</label>
               <input
                 type="text"
                 placeholder="e.g. Cinema Enthusiast"
                 required
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
-                className="w-full bg-cinema-dark border border-white/10 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-gold-500"
+                className="w-full bg-stone-900 border border-stone-800 rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-[#E50914] transition duration-300"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-gray-400">Rating Stars</label>
+              <label className="text-xs text-stone-400 font-medium">Rating Stars</label>
               <div className="flex items-center gap-1 h-[34px]">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -198,7 +198,7 @@ export default function ReviewSentimentAnalyzer({ movieId, movieTitle, onRegiste
                   >
                     <Star
                       className={`w-5 h-5 ${
-                        star <= rating ? "text-gold-400 fill-gold-400" : "text-gray-600"
+                        star <= rating ? "text-amber-500 fill-amber-500" : "text-stone-700"
                       }`}
                     />
                   </button>
@@ -207,28 +207,28 @@ export default function ReviewSentimentAnalyzer({ movieId, movieTitle, onRegiste
             </div>
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-400">Critique Review (Min 10 words for accurate AI sentiment mapping)</label>
+            <label className="text-xs text-stone-400 font-medium">Critique Review (Min 10 words for accurate AI sentiment mapping)</label>
             <textarea
               placeholder="Write your constructive thoughts regarding direction, screenplay, musical album, cast performances, etc."
               required
               rows={4}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full bg-cinema-dark border border-white/10 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-gold-500"
+              className="w-full bg-stone-900 border border-stone-800 rounded-lg px-3 py-2 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-[#E50914] transition duration-300"
             />
           </div>
           <div className="flex justify-end gap-2 text-xs">
             <button
               type="button"
               onClick={() => setFormOpen(false)}
-              className="px-3 py-1.5 text-gray-400 hover:text-white transition cursor-pointer"
+              className="px-3 py-1.5 text-stone-400 hover:text-white transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-1.5 bg-gold-500 hover:bg-gold-400 text-cinema-dark font-medium rounded-lg cursor-pointer"
+              className="px-4 py-1.5 bg-[#E50914] hover:bg-[#b00710] text-white font-bold rounded-lg cursor-pointer transition duration-350"
             >
               {submitting ? "Analyzing & Saving..." : "Publish Review"}
             </button>

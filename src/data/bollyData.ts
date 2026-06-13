@@ -17,6 +17,7 @@ export interface Movie {
   isYetToRelease?: boolean;
   trailerUrl?: string;
   releaseDate?: string;
+  songs?: string[];
 }
 
 export interface ActorProfile {
@@ -1885,23 +1886,7 @@ export const MOVIES_DATABASE: Movie[] = [
     tagline: "Anuradha ka double paisa scheme!",
     keyCast: ["Akshay Kumar", "Bipasha Basu"]
   },
-  {
-    id: "welcome-2007",
-    title: "Welcome",
-    year: 2007,
-    genre: ["Comedy", "Fun"],
-    rating: 7.1,
-    director: "Anees Bazmee",
-    actors: ["Akshay Kumar", "Katrina Kaif"],
-    runtime: 156,
-    description: "A decent man falls in love with the sister of two underworld don brothers who want a respectable groom.",
-    boxOffice: 118,
-    budget: 40,
-    language: "Hindi",
-    posterUrl: "🖼️",
-    tagline: "Mirchi Seth, Uday Bhai, and Majnu Bhai's masterpiece painting.",
-    keyCast: ["Akshay Kumar", "Katrina Kaif"]
-  },
+
   {
     id: "singh-is-kinng-2008",
     title: "Singh Is Kinng",
@@ -2276,23 +2261,7 @@ export const MOVIES_DATABASE: Movie[] = [
     tagline: "Love changes its speed, never its soul.",
     keyCast: ["Saif Ali Khan", "Deepika Padukone"]
   },
-  {
-    id: "cocktail-2012",
-    title: "Cocktail",
-    year: 2012,
-    genre: ["Romance", "Feel Good"],
-    rating: 6.3,
-    director: "Homi Adajania",
-    actors: ["Saif Ali Khan", "Deepika Padukone"],
-    runtime: 145,
-    description: "A modern triangle relationship testing friendship bounds and career goals in busy London.",
-    boxOffice: 125,
-    budget: 35,
-    language: "Hindi",
-    posterUrl: "🍹",
-    tagline: "A spicy, bittersweet mix of friendship and love.",
-    keyCast: ["Saif Ali Khan", "Deepika Padukone"]
-  },
+
   {
     id: "go-goa-gone-2013",
     title: "Go Goa Gone",

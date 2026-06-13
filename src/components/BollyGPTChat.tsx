@@ -129,21 +129,21 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
   };
 
   return (
-    <div className="glass-panel rounded-2xl border border-gold-500/20 max-w-4xl mx-auto flex flex-col h-[520px] text-white shadow-xl overflow-hidden" id="bollygpt-chat-workspace">
+    <div className="bg-[#141414] rounded-2xl border border-stone-850 max-w-4xl mx-auto flex flex-col h-[520px] text-white shadow-2xl overflow-hidden" id="bollygpt-chat-workspace">
       {/* Header */}
-      <div className="bg-cinema-dark/80 px-6 py-4 border-b border-gold-500/10 flex items-center justify-between">
+      <div className="bg-[#1c1c1c] px-6 py-4 border-b border-stone-850 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-tr from-gold-600 to-gold-400 rounded-xl flex items-center justify-center shadow-md">
-            <Sparkles className="w-5 h-5 text-cinema-dark" />
+          <div className="w-10 h-10 bg-[#E50914] rounded-xl flex items-center justify-center shadow-lg">
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-display font-semibold text-white">BollyGPT Companion</h2>
-              <span className="bg-emerald-500/20 text-emerald-400 text-[9px] px-2 py-0.5 rounded-full font-mono uppercase tracking-wide">
-                Active Live
+              <h2 className="text-base font-sans font-black text-white tracking-tight">BollyGPT AI Companion</h2>
+              <span className="bg-emerald-500/15 text-emerald-400 text-[9px] px-2.5 py-0.5 rounded-full font-sans font-extrabold uppercase tracking-wide">
+                Live
               </span>
             </div>
-            <p className="text-xs text-gold-300/80 italic font-medium">"Rishte mein toh hum tumhare recommendation engine lagte hain!"</p>
+            <p className="text-[11px] text-stone-400 italic">"Rishte mein toh hum tumhare recommendation engine lagte hain!"</p>
           </div>
         </div>
 
@@ -156,10 +156,10 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
               if (!nextState) window.speechSynthesis.cancel();
             }}
             title={speechEnabled ? "Disable Text-to-Speech" : "Enable Text-to-Speech"}
-            className={`p-2 rounded-lg border transition ${
+            className={`p-2 rounded-lg border transition duration-300 ${
               speechEnabled
-                ? "bg-gold-500/20 text-gold-400 border-gold-500/30"
-                : "bg-cinema-dark/60 text-gray-400 border-white/10 hover:border-gold-500/20"
+                ? "bg-[#E50914]/20 text-[#E50914] border-[#E50914]/30"
+                : "bg-stone-900 text-stone-400 border-stone-800 hover:border-[#E50914]/20 hover:text-white"
             }`}
           >
             {speechEnabled ? <Volume2 className="w-4 h-4 animate-bounce" /> : <VolumeX className="w-4 h-4" />}
@@ -167,7 +167,7 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
           
           <button
             onClick={() => setMessages([messages[0]])}
-            className="p-2 bg-cinema-dark/60 text-gray-400 border border-white/10 rounded-lg hover:text-white hover:border-gold-500/20 font-mono text-xs flex items-center gap-1 cursor-pointer"
+            className="p-2 bg-stone-900 text-stone-400 border border-stone-800 rounded-lg hover:text-white hover:border-[#E50914]/30 font-sans text-xs flex items-center gap-1 cursor-pointer transition duration-300"
             title="Reset Conversation"
           >
             <RefreshCw className="w-3.5 h-3.5" /> Reset
@@ -176,21 +176,21 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
       </div>
 
       {/* Messages Sandbox */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-cinema-dark/20">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-stone-950/40">
         {messages.map((m, idx) => (
           <div
             key={idx}
             className={`flex ${m.role === "user" ? "justify-end" : "justify-start"} animate-fadeIn`}
           >
             <div
-              className={`max-w-[75%] rounded-2xl px-4 py-3 text-xs leading-relaxed ${
+              className={`max-w-[75%] rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-lg ${
                 m.role === "user"
-                  ? "bg-gradient-to-r from-gold-600/80 to-gold-500/70 text-cinema-dark font-medium shadow-md rounded-tr-none"
-                  : "bg-[#161616] text-gray-200 border border-gold-500/10 rounded-tl-none"
+                  ? "bg-[#E50914] text-white font-sans font-bold rounded-tr-none"
+                  : "bg-stone-900 text-stone-200 border border-stone-800/80 rounded-tl-none"
               }`}
             >
               {m.role === "assistant" && (
-                <div className="text-[10px] uppercase font-mono text-gold-400 font-bold mb-1 tracking-wider">
+                <div className="text-[10px] uppercase font-sans text-[#E50914] font-black mb-1 tracking-wider">
                   BollyGPT AI
                 </div>
               )}
@@ -200,13 +200,13 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-[#161616] text-gray-400 border border-gold-500/5 rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-2">
+            <div className="bg-stone-900 text-stone-400 border border-stone-850 rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-2 shadow-sm">
               <span className="flex gap-1">
-                <span className="w-2 h-2 bg-gold-400 rounded-full animate-bounce delay-100"></span>
-                <span className="w-2 h-2 bg-gold-400 rounded-full animate-bounce delay-200"></span>
-                <span className="w-2 h-2 bg-gold-400 rounded-full animate-bounce delay-300"></span>
+                <span className="w-2 h-2 bg-[#E50914] rounded-full animate-bounce delay-100"></span>
+                <span className="w-2 h-2 bg-[#E50914] rounded-full animate-bounce delay-200"></span>
+                <span className="w-2 h-2 bg-[#E50914] rounded-full animate-bounce delay-300"></span>
               </span>
-              <span className="text-[11px] font-mono">BollyGPT is scripting a reply...</span>
+              <span className="text-[11px] font-sans font-medium">BollyGPT is scripting a reply...</span>
             </div>
           </div>
         )}
@@ -214,13 +214,13 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
       </div>
 
       {/* Suggestions Tray */}
-      <div className="bg-cinema-dark/40 px-6 py-2 border-t border-gold-500/5 flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none scroll-smooth">
-        <span className="text-[10px] uppercase font-mono text-gray-500">Filmy Prompts:</span>
+      <div className="bg-stone-900 px-6 py-2 border-t border-stone-850 flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none scroll-smooth">
+        <span className="text-[10px] uppercase font-sans font-bold text-stone-500">Filmy Prompts:</span>
         {suggestions.map((s, idx) => (
           <button
             key={idx}
             onClick={() => handleSend(s)}
-            className="text-[11px] bg-[#141414] hover:bg-gold-500/10 text-gold-300 border border-gold-500/15 py-1 px-3 rounded-full cursor-pointer transition-colors"
+            className="text-[11px] bg-stone-950 hover:bg-[#E50914]/15 text-stone-300 border border-stone-850 py-1 px-3 rounded-full cursor-pointer transition duration-300 hover:text-white"
           >
             {s}
           </button>
@@ -228,14 +228,14 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
       </div>
 
       {/* Input Box */}
-      <div className="bg-cinema-dark px-6 py-4 border-t border-gold-500/10 flex items-center gap-3">
+      <div className="bg-stone-900 px-6 py-4 border-t border-stone-850 flex items-center gap-3">
         {/* Voice dictation toggle */}
         <button
           onClick={handleVoiceSearch}
-          className={`p-2.5 rounded-xl border transition ${
+          className={`p-2.5 rounded-xl border transition duration-300 ${
             listening
-              ? "bg-red-500/20 text-red-400 border-red-500/30 animate-pulse"
-              : "bg-cinema-dark border-white/10 text-gray-400 hover:text-white hover:border-gold-500/20"
+              ? "bg-[#E50914]/20 text-white border-[#E50914]/40 animate-pulse"
+              : "bg-stone-950 border-stone-850 text-stone-400 hover:text-white hover:border-[#E50914]/20"
           }`}
           title="Dictate message (Bilingual)"
         >
@@ -248,13 +248,13 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend(inputMessage)}
-          className="flex-1 bg-[#141414] text-xs text-white placeholder-gray-500 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-gold-500"
+          className="flex-1 bg-stone-950 text-xs text-stone-100 placeholder-stone-500 border border-stone-850 rounded-xl px-4 py-3 focus:outline-none focus:border-[#E50914] transition duration-300"
         />
 
         <button
           onClick={() => handleSend(inputMessage)}
           disabled={!inputMessage.trim() || loading}
-          className="p-3 bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 text-cinema-dark rounded-xl cursor-pointer transition disabled:opacity-50"
+          className="p-3 bg-[#E50914] hover:bg-[#b00710] text-white rounded-xl cursor-pointer transition duration-300 disabled:opacity-50"
         >
           <Send className="w-4 h-4" />
         </button>

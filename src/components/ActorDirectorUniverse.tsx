@@ -94,29 +94,29 @@ export default function ActorDirectorUniverse({ onRegisterXp }: { onRegisterXp: 
     : [];
 
   return (
-    <div className="space-y-6 text-white" id="actor-director-workspace">
+    <div className="space-y-6 text-stone-100" id="actor-director-workspace">
       {/* Tab Switcher */}
-      <div className="flex border-b border-gold-500/20 max-w-4xl mx-auto">
+      <div className="flex border-b border-stone-850 max-w-4xl mx-auto">
         <button
           onClick={() => setCurrentMode("actors")}
-          className={`flex-1 py-4 text-center font-display font-medium text-xs md:text-sm transition uppercase tracking-wider cursor-pointer ${
-            currentMode === "actors" ? "border-b-2 border-gold-400 text-gold-300" : "text-gray-400 hover:text-white"
+          className={`flex-1 py-4 text-center font-sans font-bold text-xs md:text-sm transition uppercase tracking-wider cursor-pointer ${
+            currentMode === "actors" ? "border-b-2 border-[#E50914] text-white" : "text-stone-400 hover:text-stone-100"
           }`}
         >
           Actor Universe
         </button>
         <button
           onClick={() => setCurrentMode("directors")}
-          className={`flex-1 py-4 text-center font-display font-medium text-xs md:text-sm transition uppercase tracking-wider cursor-pointer ${
-            currentMode === "directors" ? "border-b-2 border-gold-400 text-gold-300" : "text-gray-400 hover:text-white"
+          className={`flex-1 py-4 text-center font-sans font-bold text-xs md:text-sm transition uppercase tracking-wider cursor-pointer ${
+            currentMode === "directors" ? "border-b-2 border-[#E50914] text-white" : "text-stone-400 hover:text-stone-100"
           }`}
         >
           Director Insights
         </button>
         <button
           onClick={() => setCurrentMode("ai-analytics")}
-          className={`flex-1 py-4 text-center font-display font-medium text-xs md:text-sm transition uppercase tracking-wider cursor-pointer ${
-            currentMode === "ai-analytics" ? "border-b-2 border-gold-400 text-gold-300" : "text-gray-400 hover:text-white"
+          className={`flex-1 py-4 text-center font-sans font-bold text-xs md:text-sm transition uppercase tracking-wider cursor-pointer ${
+            currentMode === "ai-analytics" ? "border-b-2 border-[#E50914] text-white" : "text-stone-400 hover:text-stone-100"
           }`}
         >
           AI Career Analytics Hub
@@ -129,37 +129,37 @@ export default function ActorDirectorUniverse({ onRegisterXp }: { onRegisterXp: 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fadeIn">
             {/* Left sidebar selector and brief */}
             <div className="space-y-6">
-              <div className="glass-panel rounded-2xl p-5 border border-gold-500/10">
-                <h3 className="text-sm uppercase font-mono tracking-wider text-gold-400 mb-3">Celebrity Registry</h3>
+              <div className="bg-[#181818] rounded-2xl p-5 border border-stone-800">
+                <h3 className="text-xs uppercase font-sans tracking-wider text-stone-300 font-bold mb-3.5">Celebrity Registry</h3>
                 <div className="space-y-2">
                   {actors.map((act) => (
                     <button
                       key={act.id}
                       onClick={() => setSelectedActor(act)}
-                      className={`w-full p-3 rounded-xl border text-left flex items-center justify-between cursor-pointer transition ${
+                      className={`w-full p-3 rounded-xl border text-left flex items-center justify-between cursor-pointer transition duration-300 ${
                         selectedActor.id === act.id
-                          ? "bg-gold-500/15 border-gold-500/40 text-gold-300 shadow-md"
-                          : "bg-cinema-dark/40 border-white/5 text-gray-400 hover:text-white hover:bg-cinema-dark/80"
+                          ? "bg-[#E50914]/15 border-[#E50914]/40 text-white"
+                          : "bg-stone-900/60 border-stone-850/80 text-stone-400 hover:text-white hover:bg-stone-800"
                       }`}
                     >
-                      <span className="text-xs font-display font-medium">{act.name}</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
+                      <span className="text-xs font-sans font-bold">{act.name}</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Award Showcase Card */}
-              <div className="glass-panel rounded-2xl p-5 border border-gold-500/15">
-                <div className="flex items-center gap-2 text-gold-400 uppercase font-mono text-[10px] mb-3">
-                  <Award className="w-4 h-4 text-gold-400" />
+              <div className="bg-[#181818] rounded-2xl p-5 border border-stone-850">
+                <div className="flex items-center gap-2 text-stone-300 uppercase font-sans font-bold text-[10px] mb-3">
+                  <Award className="w-4 h-4 text-[#E50914]" />
                   Key Achievements & Honors
                 </div>
                 <ul className="space-y-2 text-xs">
                   {selectedActor.awards.map((awr, idx) => (
                     <li key={idx} className="flex gap-2">
-                      <span className="text-gold-400 font-mono">•</span>
-                      <span className="text-gray-300">{awr}</span>
+                      <span className="text-[#E50914] font-mono">•</span>
+                      <span className="text-stone-300">{awr}</span>
                     </li>
                   ))}
                 </ul>
@@ -170,11 +170,11 @@ export default function ActorDirectorUniverse({ onRegisterXp }: { onRegisterXp: 
             <div className="lg:col-span-2 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Visual Header card */}
-                <div className="md:col-span-3 glass-panel rounded-2xl p-6 border border-gold-500/10 relative overflow-hidden light-sweep">
-                  <div className="text-xs uppercase font-mono text-gray-500 mb-1">Actor Spotlight Profile</div>
-                  <h2 className="text-3xl md:text-4xl font-display font-medium text-white select-all">{selectedActor.name}</h2>
-                  <div className="text-xs text-gold-400 mt-1 font-mono">Born: {selectedActor.birthYear} | Active Career Spectrum</div>
-                  <p className="text-xs text-gray-300 mt-3 leading-relaxed font-sans">{selectedActor.bio}</p>
+                <div className="md:col-span-3 bg-[#181818] rounded-3xl p-6 border border-stone-800 relative overflow-hidden shadow-xl">
+                  <div className="text-xs uppercase font-mono text-stone-500 mb-1 font-bold">Actor Spotlight Profile</div>
+                  <h2 className="text-3xl md:text-4xl font-sans font-black text-white select-all leading-tight tracking-tight">{selectedActor.name}</h2>
+                  <div className="text-xs text-[#E50914] mt-1.5 font-mono font-bold">Born: {selectedActor.birthYear} | Active Career Spectrum</div>
+                  <p className="text-xs text-stone-300 mt-3 leading-relaxed font-sans">{selectedActor.bio}</p>
                 </div>
 
                 {/* Growth Trend chart */}

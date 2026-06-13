@@ -22,61 +22,61 @@
   --color-cinema-dark: #FDFBF7;
 }
 
-/* Stunning Bollywood Crimson / Gold / Fuchsia Glassmorphism utility classes for colorful theme */
+/* Stunning Cinematic Charcoal / Gold / Neon Red Premium Netflix-like Classmorphic utility classes */
 .glass-panel {
-  background: rgba(38, 3, 18, 0.82); /* Deep festive burgundy rose wine fill */
+  background: rgba(14, 12, 13, 0.85); /* Premium near-black matte fill */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(212, 175, 55, 0.35); /* Elegant gold-leaf overlay border */
-  box-shadow: 0 8px 32px rgba(215, 28, 68, 0.12), 0 0 15px rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(229, 9, 20, 0.15); /* Subtly tinted crimson border */
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 15px rgba(229, 9, 20, 0.05);
 }
 
 .glass-panel-heavy {
-  background: rgba(24, 1, 11, 0.96); /* Immersive colorful royal cinema night */
+  background: rgba(8, 8, 8, 0.98); /* Solid pitch-black theatre display background */
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 2px solid rgba(212, 175, 55, 0.45); /* Dual active gold border */
-  box-shadow: 0 16px 48px rgba(215, 28, 68, 0.22), 0 0 30px rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.25); /* Luxurious thin bright gold border */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 9, 20, 0.1);
 }
 
-/* Luxury gold-leaf border with a radiant light-reflecting metallic pattern */
+/* Premium Netflix-Red active accent border with light sweep */
 .gold-leaf-border {
   border: 1px solid transparent;
-  background: linear-gradient(rgba(38, 3, 18, 0.95), rgba(38, 3, 18, 0.95)) padding-box,
-              linear-gradient(135deg, #f6ebd0 0%, #D4AF37 35%, #8c6a22 70%, #d4ae3b 100%) border-box;
+  background: linear-gradient(rgba(14, 12, 13, 0.98), rgba(14, 12, 13, 0.98)) padding-box,
+              linear-gradient(135deg, #e50914 0%, #b50711 40%, #D4AF37 75%, #f6ebd0 100%) border-box;
 }
 
-/* Interactive Gold Hover Card */
+/* Professional Card Scale and Cinema Glow on Hover */
 .gold-hover-panel {
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .gold-hover-panel:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(215, 28, 68, 0.3), 0 0 20px rgba(212, 175, 55, 0.25);
-  border-color: rgba(212, 175, 55, 0.8);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7), 0 0 25px rgba(229, 9, 20, 0.25);
+  border-color: rgba(229, 9, 20, 0.5);
 }
 
 /* Semi-transparent blur for the luxury responsive rails and header panels */
 .cinematic-blur-nav {
-  background: rgba(38, 3, 18, 0.88);
+  background: rgba(14, 12, 13, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1.5px solid rgba(229, 9, 20, 0.2);
 }
 
 .gold-glow {
-  text-shadow: 0 2px 12px rgba(212, 175, 55, 0.65), 0 0 5px rgba(215, 28, 68, 0.4);
+  text-shadow: 0 2px 14px rgba(229, 9, 20, 0.7), 0 0 5px rgba(212, 175, 55, 0.4);
 }
 
 .gold-border-glow {
-  box-shadow: 0 10px 40px rgba(215, 28, 68, 0.25), 0 0 16px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.85), 0 0 20px rgba(229, 9, 20, 0.2);
 }
 
 /* Background spotlight ambient glow flares in rich festive, colorful tones */
 .ambient-flare-red {
   position: absolute;
-  background: radial-gradient(circle, rgba(215, 28, 68, 0.38) 0%, rgba(215, 28, 68, 0) 70%);
-  filter: blur(80px);
+  background: radial-gradient(circle, rgba(229, 9, 20, 0.18) 0%, rgba(229, 9, 20, 0) 70%);
+  filter: blur(100px);
   border-radius: 9999px;
   pointer-events: none;
   z-index: 0;
@@ -84,8 +84,8 @@
 
 .ambient-flare-gold {
   position: absolute;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.35) 0%, rgba(212, 175, 55, 0) 70%);
-  filter: blur(90px);
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0) 70%);
+  filter: blur(100px);
   border-radius: 9999px;
   pointer-events: none;
   z-index: 0;
@@ -93,30 +93,30 @@
 
 .ambient-flare-pink {
   position: absolute;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.32) 0%, rgba(236, 72, 153, 0) 70%);
-  filter: blur(70px);
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.12) 0%, rgba(236, 72, 153, 0) 70%);
+  filter: blur(80px);
   border-radius: 9999px;
   pointer-events: none;
   z-index: 0;
 }
 
-/* Custom Scrollbar for Luxury Look */
+/* Custom Scrollbar for Premium Dark Look */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #FEFCF6;
+  background: #0d0c0c;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D4AF37;
+  background: #e50914;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b58d2a;
+  background: #b50711;
 }
 
 /* Cinema marquee scanning lights animation */
