@@ -648,10 +648,10 @@ export default function App() {
           <div className="space-y-8 animate-fadeIn" id="home-dashboard-panel">
             
             {/* FESTIVAL FOCUS MODE CHIPS SELECTOR BAR */}
-            <div className={`p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 ease-in-out hover:scale-[1.015] ${
+            <div className={`p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 ease-in-out hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-colors duration-500 hover:border-white/30 ${
               theme === "dark" 
-                ? "bg-stone-900/60 border-white/5 hover:border-amber-500/30 hover:shadow-[0_0_25px_rgba(245,158,11,0.15)]" 
-                : "bg-white border-stone-200 shadow-sm hover:border-red-500/30 hover:shadow-[0_0_25px_rgba(229,9,20,0.12)]"
+                ? "bg-stone-900/60 border-white/5" 
+                : "bg-white border-stone-200 shadow-sm"
             }`} id="festival-focus-panel">
               <div className="space-y-1 text-center md:text-left">
                 <h4 className="text-sm font-display font-black flex items-center justify-center md:justify-start gap-1.5 uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-400 to-red-500">
