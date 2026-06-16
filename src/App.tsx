@@ -36,6 +36,12 @@ import SongsJukebox from "./components/SongsJukebox";
 import BollyverseAuth from "./components/BollyverseAuth";
 import BollyverseArcade from "./components/BollyverseArcade";
 import BollyverseHero from "./components/BollyverseHero";
+import MoodDiscoverer from "./components/MoodDiscoverer";
+import BollyPassportAndAiStudio from "./components/BollyPassportAndAiStudio";
+import InteractiveShootMap from "./components/InteractiveShootMap";
+import BollyWrapped from "./components/BollyWrapped";
+import BollyEducation from "./components/BollyEducation";
+import { BollywoodSynth } from "./utils/audioSynth";
 
 
 const TRANSLATIONS = {
@@ -97,6 +103,24 @@ export default function App() {
   const [selectedSongToPlayId, setSelectedSongToPlayId] = useState<number | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [selectedTimelineCategory, setSelectedTimelineCategory] = useState<string>("All");
+
+  // Global floating music player states
+  const [globalPlay, setGlobalPlay] = useState(false);
+  const [currentGlobalTrack, setCurrentGlobalTrack] = useState("Mehndi Laga Ke Rakhna (Dhol beats)");
+
+  // Handle global music sync
+  useEffect(() => {
+    if (globalPlay) {
+      BollywoodSynth.playSong(currentGlobalTrack, "Romantic", () => {}, () => {
+        setGlobalPlay(false);
+      });
+    } else {
+      BollywoodSynth.stop();
+    }
+    return () => {
+      BollywoodSynth.stop();
+    };
+  }, [globalPlay, currentGlobalTrack]);
 
   // Premium Authentication and Themeing States
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
@@ -575,6 +599,38 @@ export default function App() {
           Filmy Arcade 🎮
         </button>
         <button
+          onClick={() => setActiveTab("passport")}
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "passport" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
+          }`}
+        >
+          AI Passport & Studio 🏆
+        </button>
+        <button
+          onClick={() => setActiveTab("wrapped")}
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "wrapped" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
+          }`}
+        >
+          My Wrapped 📊
+        </button>
+        <button
+          onClick={() => setActiveTab("map")}
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "map" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
+          }`}
+        >
+          Famous Spots 🌍
+        </button>
+        <button
+          onClick={() => setActiveTab("education")}
+          className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
+            activeTab === "education" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
+          }`}
+        >
+          School of Cinema 🧠
+        </button>
+        <button
           onClick={() => setActiveTab("admin")}
           className={`px-3 py-1.5 rounded-md text-xs font-sans font-bold cursor-pointer transition-all duration-300 ${
             activeTab === "admin" ? "bg-[#E50914] text-white shadow-[0_2px_12px_rgba(229,9,20,0.4)]" : "text-stone-400 hover:text-stone-100 hover:bg-stone-900"
@@ -592,8 +648,10 @@ export default function App() {
           <div className="space-y-8 animate-fadeIn" id="home-dashboard-panel">
             
             {/* FESTIVAL FOCUS MODE CHIPS SELECTOR BAR */}
-            <div className={`p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 transition-all ${
-              theme === "dark" ? "bg-stone-900/60 border-white/5" : "bg-white border-stone-200 shadow-sm"
+            <div className={`p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 ease-in-out hover:scale-[1.015] ${
+              theme === "dark" 
+                ? "bg-stone-900/60 border-white/5 hover:border-amber-500/30 hover:shadow-[0_0_25px_rgba(245,158,11,0.15)]" 
+                : "bg-white border-stone-200 shadow-sm hover:border-red-500/30 hover:shadow-[0_0_25px_rgba(229,9,20,0.12)]"
             }`} id="festival-focus-panel">
               <div className="space-y-1 text-center md:text-left">
                 <h4 className="text-sm font-display font-black flex items-center justify-center md:justify-start gap-1.5 uppercase text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-400 to-red-500">
@@ -1127,95 +1185,18 @@ export default function App() {
 
         {/* TAB 3: MOOD-BASED MOVIE DISCOVERY */}
         {activeTab === "mood" && (
-          <div className="glass-panel rounded-2xl p-6 lg:p-8 border border-gold-500/20 text-white space-y-8 animate-fadeIn" id="mood-discovery-panel">
-            <div className="border-b border-white/5 pb-4">
-              <h2 className="text-2xl font-display font-semibold flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-gold-400" />
-                Mood-Based Discovery Engine
-              </h2>
-              <p className="text-xs text-gray-400 mt-1">
-                Select your current emotional frequency. BollyGP AI will instantly match your vibration with 4 absolute Bollywood masterpieces.
-              </p>
-            </div>
-
-            {/* Mood selector list */}
-            <div className="flex flex-wrap gap-2.5 items-center justify-center p-3 bg-cinema-dark/30 rounded-2xl border border-white/5">
-              {[
-                { mood: "Happy", icon: "😇" },
-                { mood: "Motivated", icon: "🔥" },
-                { mood: "Romantic", icon: "💖" },
-                { mood: "Family", icon: "👨‍👩‍👧" },
-                { mood: "Thriller", icon: "👁️" },
-                { mood: "Comedy", icon: "😂" },
-                { mood: "Action", icon: "⚔️" },
-                { mood: "Emotional", icon: "😢" }
-              ].map((mObj) => (
-                <button
-                  key={mObj.mood}
-                  onClick={() => triggerMoodDiscovery(mObj.mood)}
-                  className={`px-4 py-2.5 border rounded-xl text-xs font-display font-medium cursor-pointer transition flex items-center gap-2 ${
-                    activeMood === mObj.mood
-                      ? "bg-gold-500/20 text-gold-300 border-gold-400 shadow-md"
-                      : "bg-[#141414]/90 border-white/10 text-gray-400 hover:text-white"
-                  }`}
-                >
-                  <span>{mObj.icon}</span>
-                  <span>{mObj.mood}</span>
-                </button>
-              ))}
-            </div>
-
-            {moodLoading ? (
-              <div className="text-center py-12">
-                <RefreshCw className="w-8 h-8 text-gold-500 animate-spin mx-auto" />
-                <p className="text-xs text-gray-400 mt-2 font-mono">Selecting matching screenplay tags...</p>
-              </div>
-            ) : moodRecommendations.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slideUp">
-                {moodRecommendations.map((mr: any, idx: number) => (
-                  <div key={idx} className="bg-cinema-dark border border-white/10 p-5 rounded-2xl space-y-3 relative overflow-hidden flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start">
-                        <span className="font-mono text-[9px] bg-gold-400/20 text-gold-300 px-2 py-0.5 rounded border border-gold-500/20 uppercase font-bold">
-                          {mr.genre[0]}
-                        </span>
-                        <span className="text-xs font-mono text-gray-500">{mr.year}</span>
-                      </div>
-                      <h4 className="text-lg font-display font-bold text-white mt-2 select-all">{mr.title}</h4>
-                      <p className="text-[11px] text-gold-400 font-mono italic">"{mr.tagline}"</p>
-                      <p className="text-xs text-gray-300 font-sans mt-2.5 leading-relaxed">
-                        {mr.reason}
-                      </p>
-
-                      {Array.isArray(mr.songs) && mr.songs.length > 0 && (
-                        <div className="pt-2 border-t border-white/5 space-y-1 mt-3">
-                          <span className="text-[10px] text-pink-300 font-mono font-extrabold flex items-center gap-1 uppercase tracking-wider">
-                            <Music className="w-3 h-3 text-gold-400" /> Suggested hit tracks
-                          </span>
-                          <div className="flex flex-wrap gap-1">
-                            {mr.songs.map((song: string, sIdx: number) => (
-                              <span key={sIdx} className="bg-pink-950/40 border border-gold-500/10 rounded-lg px-2 py-0.5 text-[10px] text-amber-100 font-medium">
-                                🎵 {song}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex justify-between items-center border-t border-white/5 pt-3 mt-4 text-[10px] font-mono text-gray-500">
-                      <span>Affinity Rating: <strong>{mr.rating}/10</strong></span>
-                      <span className="text-gold-300 uppercase tracking-widest font-bold font-display cursor-pointer hover:text-white" onClick={() => { setActiveTab("explorer"); setActiveMovieId(mr.title); }}>View in Explorer</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 border border-white/5 bg-cinema-dark/20 rounded-xl">
-                <p className="text-xs text-gray-500">Click any mood button above to load dynamic matches.</p>
-              </div>
-            )}
-          </div>
+          <MoodDiscoverer 
+            onRegisterXp={handleRegisterXp}
+            onSelectMovie={(movieName) => {
+              setActiveTab("explorer");
+              setActiveMovieId(movieName);
+            }}
+            onPlaySong={(songId) => {
+              setActiveTab("songs");
+              setSelectedSongToPlayId(songId);
+            }}
+            theme={theme}
+          />
         )}
 
         {/* TAB 4: UNIFIED MOVIE EXPLORER */}
@@ -1346,6 +1327,38 @@ export default function App() {
           />
         )}
 
+        {/* TAB 10.7: BOLLYWOOD WRAPPED */}
+        {activeTab === "wrapped" && (
+          <BollyWrapped 
+            userProfile={profile}
+            theme={theme}
+          />
+        )}
+
+        {/* TAB 10.8: INTERACTIVE MAP */}
+        {activeTab === "map" && (
+          <InteractiveShootMap 
+            theme={theme}
+          />
+        )}
+
+        {/* TAB 10.9: AI STUDIO & PASSPORT */}
+        {activeTab === "passport" && (
+          <BollyPassportAndAiStudio 
+            onRegisterXp={handleRegisterXp}
+            userProfile={profile}
+            theme={theme}
+          />
+        )}
+
+        {/* TAB 10.10: SCHOOL OF CINEMA EDUCATION */}
+        {activeTab === "education" && (
+          <BollyEducation 
+            onRegisterXp={handleRegisterXp}
+            theme={theme}
+          />
+        )}
+
         {/* TAB 11: ADMIN STRUTURAL CONTROL PANEL */}
         {activeTab === "admin" && (
           <div className="glass-panel rounded-2xl p-6 lg:p-8 border border-gold-500/20 text-white space-y-8 animate-fadeIn" id="admin-workspace">
@@ -1432,6 +1445,42 @@ export default function App() {
           Curated index for Bollywood Superfans. Built with React, Vite & Gemini Intelligence.
         </p>
       </footer>
+
+      {/* GLOBAL FLOATING VINYL PLAYER */}
+      <div className="fixed bottom-6 right-6 z-50 bg-[#121212]/95 backdrop-blur-md border border-amber-500/30 p-3.5 rounded-3xl shadow-2xl flex items-center gap-3 animate-slideUp border-l-4 border-l-red-500 max-w-sm">
+        <div className={`w-12 h-12 bg-black rounded-full flex items-center justify-center border-2 border-amber-400 relative overflow-hidden shrink-0 shadow-lg ${
+          globalPlay ? "animate-spin-slow" : ""
+        }`}>
+          {/* Label indicating Vinyl groove lines */}
+          <div className="absolute inset-1 border border-white/5 rounded-full" />
+          <div className="absolute inset-3 border border-white/10 rounded-full" />
+          <div className="w-3.5 h-3.5 bg-red-650 rounded-full border border-black flex items-center justify-center">
+            <div className="w-1 h-1 bg-white rounded-full" />
+          </div>
+        </div>
+
+        <div className="pr-4">
+          <span className="text-[8px] font-mono text-amber-500 font-extrabold tracking-widest block uppercase">★ Global Vinyl Playing ★</span>
+          <strong className="text-[11px] text-white block select-text truncate max-w-[150px]">{currentGlobalTrack}</strong>
+          <span className="text-[9px] text-stone-400 block font-mono">Status: {globalPlay ? "spinning" : "paused"}</span>
+        </div>
+
+        <button
+          onClick={() => setGlobalPlay(!globalPlay)}
+          className={`w-9 h-9 rounded-full flex items-center justify-center border transition duration-300 cursor-pointer ${
+            globalPlay 
+              ? "bg-[#E50914]/20 border-[#E50914] text-[#E50914]" 
+              : "bg-amber-400 text-black border-amber-400 hover:scale-105"
+          }`}
+          title="Toggle Global Masterbeats Playback"
+        >
+          {globalPlay ? (
+            <span className="text-[10px] font-sans font-black">Pause</span>
+          ) : (
+            <Play className="w-4.5 h-4.5 fill-current text-black ml-0.5" />
+          )}
+        </button>
+      </div>
 
     </div>
   );

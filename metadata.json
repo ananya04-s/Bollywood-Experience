@@ -1,6 +1,6 @@
 {
   "name": "BollywoodVerse AI",
   "description": "An intelligent full-stack entertainment platform combining AI-driven recommendations, sentiment-analyzed movie reviews, career analytics, and interactive quizzes for the ultimate Bollywood cinema experience.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

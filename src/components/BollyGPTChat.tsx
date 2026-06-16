@@ -21,9 +21,10 @@ export default function BollyGPTChat({ onRegisterXp }: { onRegisterXp: (amount: 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const suggestions = [
-    "Recommend comedy movies for family.",
-    "Which Shah Rukh Khan movie should I watch first?",
-    "Best movies of 2010.",
+    "Recommend emotional songs from the 2000s.",
+    "Suggest family-friendly comedy movies.",
+    "Find dance numbers for a wedding.",
+    "Recommended retro disco soundtracks.",
     "Settles debate: 3 Idiots vs Dangal?",
   ];
 
