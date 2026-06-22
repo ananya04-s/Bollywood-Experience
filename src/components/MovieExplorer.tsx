@@ -10,6 +10,7 @@ interface MovieExplorerProps {
   onToggleWatchlist: (movieId: string) => void;
   activeMovieId: string | null;
   setActiveMovieId: (id: string | null) => void;
+  initialSearch?: string;
 }
 
 export default function MovieExplorer({ 
@@ -17,10 +18,15 @@ export default function MovieExplorer({
   watchlist, 
   onToggleWatchlist,
   activeMovieId,
-  setActiveMovieId
+  setActiveMovieId,
+  initialSearch = ""
 }: MovieExplorerProps) {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
+
+  useEffect(() => {
+    setSearch(initialSearch);
+  }, [initialSearch]);
   const [genre, setGenre] = useState("");
   const [sort, setSort] = useState("rating");
   const [loading, setLoading] = useState(true);

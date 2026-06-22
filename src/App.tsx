@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "motion/react";
 import { Movie, UserReview, TimelineEvent } from "./types";
 import { 
   Sparkles, 
@@ -22,7 +23,8 @@ import {
   TrendingUp,
   Award,
   RefreshCw,
-  Music
+  Music,
+  Search
 } from "lucide-react";
 
 // Submodule imports
@@ -193,6 +195,36 @@ export default function App() {
 
   // Sync expanded movie focus ID
   const [activeMovieId, setActiveMovieId] = useState<string | null>(null);
+
+  // Central search states for movies
+  const [movieSearchQuery, setMovieSearchQuery] = useState("");
+  const [headerSearchResults, setHeaderSearchResults] = useState<any[]>([]);
+  const [isHeaderSearching, setIsHeaderSearching] = useState(false);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+
+  // Sync central search query
+  useEffect(() => {
+    if (!movieSearchQuery.trim()) {
+      setHeaderSearchResults([]);
+      return;
+    }
+    const delayDebounce = setTimeout(async () => {
+      setIsHeaderSearching(true);
+      try {
+        const response = await fetch(`/api/movies?search=${encodeURIComponent(movieSearchQuery)}`);
+        if (response.ok) {
+          const data = await response.json();
+          setHeaderSearchResults(data);
+        }
+      } catch (err) {
+        console.error("Error searching movies:", err);
+      } finally {
+        setIsHeaderSearching(false);
+      }
+    }, 250);
+
+    return () => clearTimeout(delayDebounce);
+  }, [movieSearchQuery]);
 
   // Admin state
   const [adminReviews, setAdminReviews] = useState<UserReview[]>([]);
@@ -430,6 +462,109 @@ export default function App() {
               ★ PREMIUM CINEMATIC FAN SPHERE ★
             </span>
           </div>
+        </div>
+
+        {/* CENTRAL PREMIER MOVIE SEARCH HUB */}
+        <div 
+          className="relative w-full md:max-w-xs lg:max-w-md z-30 mx-auto md:mx-4" 
+          id="header-movie-search-bar"
+          onMouseLeave={() => setShowSearchDropdown(false)}
+        >
+          <div className="relative">
+            <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search movies (e.g. 3 Idiots, Romance, Action)... 🎬"
+              value={movieSearchQuery}
+              onChange={(e) => {
+                setMovieSearchQuery(e.target.value);
+                setShowSearchDropdown(true);
+              }}
+              onFocus={() => setShowSearchDropdown(true)}
+              className={`w-full text-xs rounded-xl py-2 pl-9 pr-8 outline-none border transition-all duration-300 ${
+                theme === "dark"
+                  ? "bg-stone-900/95 border-stone-800 text-stone-100 placeholder-stone-500 focus:border-[#E50914] focus:ring-1 focus:ring-[#E50914]/30"
+                  : "bg-white border-stone-200 text-stone-900 placeholder-stone-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/30"
+              }`}
+            />
+            {movieSearchQuery && (
+              <button
+                onClick={() => {
+                  setMovieSearchQuery("");
+                  setHeaderSearchResults([]);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200 text-xs font-bold font-mono transition"
+                title="Clear Search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* AUTOCOMPLETE FLOATING DROPDOWN WITH GLASSMORPHISM AND TRANSITION */}
+          {showSearchDropdown && movieSearchQuery && (
+            <div className={`absolute left-0 right-0 mt-1.5 rounded-2xl border shadow-2xl p-2.5 z-50 max-h-[300px] overflow-y-auto animate-fadeIn ${
+              theme === "dark"
+                ? "bg-stone-950/95 border-stone-850 backdrop-blur-md text-stone-100"
+                : "bg-white/95 border-stone-200 backdrop-blur-md text-stone-900 shadow-stone-300/40"
+            }`}>
+              {isHeaderSearching ? (
+                <div className="p-4 text-center text-xs font-mono text-stone-400 animate-pulse">
+                  Searching cinematic tapes... 🎬
+                </div>
+              ) : headerSearchResults.length === 0 ? (
+                <div className="p-4 text-center text-xs text-stone-400 font-sans">
+                  No matching movies found 🔍
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <div className="px-2 py-1 text-[9px] font-mono text-stone-400 uppercase tracking-wider border-b border-stone-800/10 mb-1">
+                    Movies Matches ({headerSearchResults.length})
+                  </div>
+                  {headerSearchResults.map((movie) => (
+                    <button
+                      key={movie.id}
+                      onClick={() => {
+                        setActiveMovieId(movie.id);
+                        setActiveTab("explorer");
+                        setShowSearchDropdown(false);
+                      }}
+                      className={`w-full text-left p-2 rounded-xl flex items-center gap-3 transition-all duration-250 cursor-pointer ${
+                        theme === "dark" ? "hover:bg-stone-900 text-stone-100" : "hover:bg-stone-100 text-stone-900"
+                      }`}
+                    >
+                      <div className="text-2xl p-1.5 bg-stone-900 rounded-lg border border-stone-850 shrink-0">
+                        {movie.posterUrl || "🎬"}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-bold truncate pr-2">{movie.title}</h4>
+                          <span className="text-[10px] font-mono text-amber-500 font-extrabold flex items-center gap-0.5 shrink-0">
+                            ★ {movie.rating}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-stone-400 line-clamp-1">
+                          {movie.year} • {movie.director}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                  
+                  <div className="pt-2 border-t border-stone-800/10 mt-1.5">
+                    <button
+                      onClick={() => {
+                        setActiveTab("explorer");
+                        setShowSearchDropdown(false);
+                      }}
+                      className="w-full text-center py-1 text-[10px] font-bold uppercase tracking-wider text-[#E50914] hover:underline"
+                    >
+                      View All Results inside Movie Explorer ➔
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Global User XP Rerank dashboard and Action Controls */}
@@ -671,21 +806,35 @@ export default function App() {
                   { id: "eid", label: "Eid Mubarak 🌙" },
                   { id: "valentine", label: "Valentine Love 💖" },
                   { id: "patriotic", label: "Azadi Day 🇮🇳" }
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => handleSelectFestival(item.id)}
-                    className={`py-1.5 px-3.5 rounded-full text-xs font-bold font-display cursor-pointer transition ${
-                      festival === item.id
-                        ? "bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-md scale-105"
-                        : theme === "dark"
-                          ? "bg-stone-950 border border-stone-800 text-stone-400 hover:text-white"
-                          : "bg-stone-50 border border-stone-200 text-stone-600 hover:text-stone-900"
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+                ].map((item) => {
+                  const isActive = festival === item.id;
+                  return (
+                    <motion.button
+                      key={item.id}
+                      layout
+                      onClick={() => handleSelectFestival(item.id)}
+                      className={`relative py-1.5 px-3.5 rounded-full text-xs font-bold font-display cursor-pointer transition-colors duration-300 ${
+                        isActive
+                          ? "text-white shadow-md z-10"
+                          : theme === "dark"
+                            ? "bg-stone-950 border border-stone-800 text-stone-400 hover:text-white"
+                            : "bg-stone-50 border border-stone-200 text-stone-600 hover:text-stone-900"
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                    >
+                      {isActive && (
+                        <motion.span
+                          layoutId="activeFestivalSpotlight"
+                          className="absolute inset-0 bg-gradient-to-r from-red-600 to-amber-500 rounded-full -z-10"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10">{item.label}</span>
+                    </motion.button>
+                  );
+                })}
               </div>
             </div>
 
@@ -1207,6 +1356,7 @@ export default function App() {
             onToggleWatchlist={handleToggleWatchlist}
             activeMovieId={activeMovieId}
             setActiveMovieId={setActiveMovieId}
+            initialSearch={movieSearchQuery}
           />
         )}
 
